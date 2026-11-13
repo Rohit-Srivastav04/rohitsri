@@ -58,27 +58,27 @@ const FEATURED = [
 ];
 
 const SCENES = {
-  greet: { folder: 'greet', count: 5, fps: 7, loop: true },
-  idle: { folder: 'idle', count: 6, fps: 5, loop: true },
-  walk: { folder: 'walk', count: 6, fps: 10, loop: true },
-  think: { folder: 'think', count: 5, fps: 5, loop: true },
-  typing: { folder: 'typing', count: 6, fps: 8, loop: true },
-  wave: { folder: 'wave', count: 6, fps: 8, loop: true },
-  sit: { folder: 'sit', count: 5, fps: 6, loop: false },
+  greet: { folder: 'greet', count: 5, fps: 7 },
+  idle: { folder: 'idle', count: 6, fps: 5 },
+  walk: { folder: 'walk', count: 6, fps: 10 },
+  think: { folder: 'think', count: 5, fps: 5 },
+  typing: { folder: 'typing', count: 6, fps: 8 },
+  wave: { folder: 'wave', count: 6, fps: 8 },
+  sit: { folder: 'sit', count: 5, fps: 6 },
 };
 
 const cache = new Map();
 
 function frameUrl(scene, i) {
   const s = SCENES[scene] || SCENES.idle;
-  const n = String(i + 1).padStart(2, '0');
-  return `./character/${s.folder}/frame-${n}.png`;
+  return `./character/${s.folder}/frame-${String(i + 1).padStart(2, '0')}.png`;
 }
 
 function loadImage(src) {
   if (cache.has(src)) return cache.get(src);
   const p = new Promise((resolve, reject) => {
     const img = new Image();
+    img.decoding = 'async';
     img.onload = () => resolve(img);
     img.onerror = reject;
     img.src = src;
@@ -134,27 +134,38 @@ function observeReveals() {
   document.querySelectorAll('.reveal:not(.in)').forEach((el) => io.observe(el));
 }
 
+function setCastMode(cast, mode) {
+  cast.classList.remove('mode-hero', 'mode-follow', 'mode-journey');
+  cast.classList.add(mode, 'on');
+  if (mode !== 'mode-journey') {
+    cast.style.left = '';
+    cast.style.right = '';
+  }
+}
+
 /**
- * Apple-style canvas cast:
- * - transparent PNG sequence drawn to canvas (no box / no plate)
- * - scroll progress scrubs walk frames during journey
- * - character slides across pin stage while chapters scrub
+ * One character canvas:
+ * - Hero: large, greets in the right column (replaces photo)
+ * - Follow: compact fixed companion after hero
+ * - Journey: walks left→right, frames scrubbed by scroll
  */
 function setupCinematicCast() {
   const cast = document.getElementById('cast');
   const canvas = document.getElementById('cast-canvas');
+  const hero = document.querySelector('.hero');
+  const heroStage = document.getElementById('hero-stage');
   const progress = document.getElementById('scroll-progress');
-  if (!cast || !canvas) return;
+  if (!cast || !canvas || !hero || !heroStage) return;
 
   const ctx = canvas.getContext('2d', { alpha: true });
   let scene = 'greet';
   let frame = 0;
   let acc = 0;
   let last = performance.now();
-  let walkProgress = 0;
   let inJourney = false;
   let drawn = null;
   let needsDraw = true;
+  let mode = 'mode-hero';
 
   async function drawFrame(sceneKey, index) {
     const cfg = SCENES[sceneKey] || SCENES.idle;
@@ -169,13 +180,11 @@ function setupCinematicCast() {
       const scale = Math.min(cw / img.width, ch / img.height);
       const dw = img.width * scale;
       const dh = img.height * scale;
-      const dx = (cw - dw) / 2;
-      const dy = ch - dh;
-      ctx.drawImage(img, dx, dy, dw, dh);
+      ctx.drawImage(img, (cw - dw) / 2, ch - dh, dw, dh);
       drawn = key;
       needsDraw = false;
     } catch {
-      /* skip missing frame */
+      /* missing frame */
     }
   }
 
@@ -192,12 +201,12 @@ function setupCinematicCast() {
   const scenes = document.querySelectorAll('[data-scene]');
   const sceneIo = new IntersectionObserver(
     (entries) => {
+      if (inJourney || mode === 'mode-hero') return;
       const visible = entries
         .filter((e) => e.isIntersecting)
         .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
       if (!visible) return;
-      if (document.body.classList.contains('in-journey')) return;
-      setScene(visible.target.dataset.scene);
+      setScene(visible.target.dataset.scene || 'idle');
     },
     { threshold: [0.35, 0.55, 0.7] }
   );
@@ -208,47 +217,76 @@ function setupCinematicCast() {
   const fill = document.getElementById('journey-fill');
   const chapters = [...document.querySelectorAll('.chapter')];
 
-  function updateJourney() {
-    if (!journey || !track) return;
-    if (window.innerWidth <= 980) {
-      track.style.transform = '';
+  function placeCastInHero() {
+    if (cast.parentElement !== heroStage) heroStage.appendChild(cast);
+    setCastMode(cast, 'mode-hero');
+    mode = 'mode-hero';
+    setScene('greet');
+  }
+
+  function placeCastFixed(nextMode) {
+    if (cast.parentElement !== document.body) document.body.appendChild(cast);
+    setCastMode(cast, nextMode);
+    mode = nextMode;
+  }
+
+  function updateLayout() {
+    const desktop = window.innerWidth > 980;
+    const heroRect = hero.getBoundingClientRect();
+    const heroStillVisible = heroRect.bottom > 120;
+
+    if (!desktop) {
+      placeCastInHero();
+      if (track) track.style.transform = '';
       document.body.classList.remove('in-journey');
-      cast.classList.remove('in-journey');
       inJourney = false;
       return;
     }
-    const rect = journey.getBoundingClientRect();
-    const total = journey.offsetHeight - window.innerHeight;
-    const scrolled = Math.min(Math.max(-rect.top, 0), total);
-    const p = total > 0 ? scrolled / total : 0;
 
-    inJourney = rect.top <= 0 && rect.bottom >= window.innerHeight;
-    document.body.classList.toggle('in-journey', inJourney);
-    cast.classList.toggle('in-journey', inJourney);
-    cast.classList.toggle('on', true);
+    // Journey pin owns the character
+    if (journey && track) {
+      const rect = journey.getBoundingClientRect();
+      const total = journey.offsetHeight - window.innerHeight;
+      const scrolled = Math.min(Math.max(-rect.top, 0), total);
+      const p = total > 0 ? scrolled / total : 0;
+      inJourney = rect.top <= 0 && rect.bottom >= window.innerHeight;
+      document.body.classList.toggle('in-journey', inJourney);
 
-    if (inJourney) {
-      track.style.transform = `translate3d(${-p * 75}%, 0, 0)`;
-      if (fill) fill.style.width = `${p * 100}%`;
-      walkProgress = p;
-      // walk character across the viewport as chapters scrub
-      const left = 6 + p * 72;
-      cast.style.left = `${left}%`;
-      cast.style.right = 'auto';
-      const idx = Math.min(chapters.length - 1, Math.floor(p * chapters.length));
-      const ch = chapters[idx];
-      const next = ch?.dataset.scene || 'walk';
-      // prefer walk while moving between chapter beats
-      const chapterLocal = p * chapters.length - idx;
-      setScene(chapterLocal < 0.15 || chapterLocal > 0.85 ? 'walk' : next);
-      // scrub walk frames from scroll (Apple image-sequence style)
-      if (scene === 'walk') {
-        frame = Math.floor(p * 48) % SCENES.walk.count;
-        needsDraw = true;
+      if (inJourney) {
+        placeCastFixed('mode-journey');
+        track.style.transform = `translate3d(${-p * 75}%, 0, 0)`;
+        if (fill) fill.style.width = `${p * 100}%`;
+        // Keep character on the floor to the right of chapter copy
+        cast.style.left = `${48 + p * 38}%`;
+        cast.style.right = 'auto';
+
+        const idx = Math.min(chapters.length - 1, Math.floor(p * chapters.length));
+        const chapterLocal = p * chapters.length - idx;
+        chapters.forEach((node, i) => {
+          const center = (i + 0.5) / chapters.length;
+          const dist = Math.abs(p - center);
+          node.style.opacity = String(Math.max(0.12, 1 - dist * chapters.length * 0.85));
+        });
+        const ch = chapters[idx];
+        const next = ch?.dataset.scene || 'walk';
+        setScene(chapterLocal < 0.18 || chapterLocal > 0.82 ? 'walk' : next);
+        if (scene === 'walk') {
+          frame = Math.floor(p * 48) % SCENES.walk.count;
+          needsDraw = true;
+        }
+        return;
       }
+      track.style.transform = '';
+      if (fill) fill.style.width = '0%';
+      chapters.forEach((node) => {
+        node.style.opacity = '';
+      });
+    }
+
+    if (heroStillVisible) {
+      placeCastInHero();
     } else {
-      cast.style.left = '';
-      cast.style.right = '';
+      placeCastFixed('mode-follow');
     }
   }
 
@@ -256,8 +294,7 @@ function setupCinematicCast() {
     const max = document.documentElement.scrollHeight - window.innerHeight;
     const p = max > 0 ? window.scrollY / max : 0;
     if (progress) progress.style.width = `${p * 100}%`;
-    cast.classList.toggle('on', window.scrollY > 20);
-    updateJourney();
+    updateLayout();
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -265,6 +302,7 @@ function setupCinematicCast() {
     needsDraw = true;
     onScroll();
   });
+  placeCastInHero();
   onScroll();
 
   function tick(now) {

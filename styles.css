@@ -38,68 +38,84 @@ img { max-width: 100%; display: block; }
   width: 0%;
   z-index: 100;
   background: linear-gradient(90deg, var(--crimson), var(--silver));
-  box-shadow: 0 0 16px rgba(212, 21, 20, 0.6);
-}
-.scanlines {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  opacity: 0.045;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 2px,
-    rgba(0, 0, 0, 0.5) 3px
-  );
+  box-shadow: 0 0 16px rgba(212, 21, 20, 0.55);
 }
 
-/* Floating cast — character only, no plate / no video box */
+/* —— Character cast —— */
 .cast {
-  position: fixed;
-  right: clamp(4px, 2.5vw, 28px);
-  bottom: 0;
-  z-index: 40;
-  width: min(220px, 26vw);
-  height: min(440px, 72vh);
   pointer-events: none;
-  opacity: 0;
-  transform: translate3d(0, 28px, 0);
-  transition: opacity 0.5s ease, transform 0.5s ease, left 0.15s linear, right 0.15s linear;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
+  z-index: 40;
 }
-.cast.on {
+.cast.on { opacity: 1; }
+
+/* Hero: large character in the right column */
+.cast.mode-hero {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   opacity: 1;
   transform: none;
 }
-.cast.in-journey {
-  right: auto;
-  left: 8%;
-  bottom: 8vh;
-  width: min(200px, 22vw);
-  height: min(400px, 62vh);
-  transition: left 0.05s linear, opacity 0.4s ease;
+.cast.mode-hero #cast-canvas {
+  width: auto;
+  height: 100%;
+  max-height: 100%;
+  max-width: 100%;
 }
-#cast-canvas {
+
+/* After hero: compact floating companion */
+.cast.mode-follow {
+  position: fixed;
+  right: clamp(8px, 3vw, 32px);
+  bottom: 0;
+  left: auto;
+  width: min(180px, 22vw);
+  height: min(360px, 58vh);
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+.cast.mode-follow #cast-canvas {
   width: 100%;
   height: auto;
-  max-height: 92%;
+  max-height: 94%;
+}
+
+/* Journey: walks on the floor band — right of copy, never over headlines */
+.cast.mode-journey {
+  position: fixed;
+  bottom: 4vh;
+  left: 52%;
+  right: auto;
+  width: min(170px, 18vw);
+  height: min(340px, 52vh);
+  opacity: 1;
+  transition: left 0.04s linear;
+  z-index: 35;
+}
+.cast.mode-journey #cast-canvas {
+  width: 100%;
+  height: auto;
+  max-height: 94%;
+}
+
+#cast-canvas {
   display: block;
   background: transparent !important;
-  filter: drop-shadow(0 18px 32px rgba(0, 0, 0, 0.65));
-  image-rendering: auto;
+  filter: drop-shadow(0 22px 36px rgba(0, 0, 0, 0.7));
 }
 .cast-ground {
-  width: 55%;
-  height: 10px;
-  margin-top: -6px;
+  width: 48%;
+  height: 12px;
+  margin-top: -8px;
   border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.55), transparent 70%);
-  filter: blur(4px);
-  opacity: 0.85;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.55), transparent 72%);
+  filter: blur(5px);
+  opacity: 0.9;
 }
 
 .nav {
@@ -111,7 +127,7 @@ img { max-width: 100%; display: block; }
   justify-content: space-between;
   gap: 16px;
   padding: 14px clamp(16px, 4vw, 40px);
-  background: rgba(8, 8, 8, 0.82);
+  background: rgba(8, 8, 8, 0.88);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
 }
@@ -146,23 +162,31 @@ img { max-width: 100%; display: block; }
 }
 
 .hero {
+  position: relative;
   min-height: calc(100vh - 60px);
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 28px;
-  align-items: center;
-  padding: clamp(32px, 7vh, 80px) clamp(16px, 4vw, 40px);
-  max-width: 1200px;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: clamp(12px, 3vw, 36px);
+  align-items: stretch;
+  padding: clamp(24px, 5vh, 56px) clamp(16px, 4vw, 40px) 0;
+  max-width: 1240px;
   margin: 0 auto;
   background:
-    radial-gradient(600px 320px at 80% 20%, rgba(212, 21, 20, 0.16), transparent 60%),
-    radial-gradient(500px 280px at 10% 90%, rgba(205, 203, 202, 0.05), transparent 55%);
+    radial-gradient(640px 340px at 88% 18%, rgba(212, 21, 20, 0.14), transparent 62%),
+    radial-gradient(480px 260px at 8% 88%, rgba(205, 203, 202, 0.05), transparent 55%);
+}
+.hero-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: clamp(32px, 6vh, 72px);
+  z-index: 2;
 }
 .hero-name {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(2.8rem, 9vw, 5.6rem);
+  font-size: clamp(2.6rem, 8.2vw, 5.2rem);
   line-height: 0.95;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -175,7 +199,7 @@ img { max-width: 100%; display: block; }
   margin: 20px 0 0;
   max-width: 36ch;
   color: var(--muted);
-  font-size: 1.1rem;
+  font-size: 1.08rem;
   line-height: 1.5;
 }
 .hero-actions {
@@ -213,20 +237,16 @@ img { max-width: 100%; display: block; }
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
 }
-.hero-photo {
-  border: 1px solid var(--line);
-  overflow: hidden;
-  clip-path: polygon(8% 0, 100% 0, 100% 100%, 0 100%);
-}
-.hero-photo img {
-  width: 100%;
-  height: min(70vh, 560px);
-  object-fit: cover;
-  object-position: center 15%;
-  filter: contrast(1.05) saturate(0.95);
+
+.hero-stage {
+  position: relative;
+  min-height: min(78vh, 640px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
-/* JOURNEY pin */
+/* JOURNEY */
 .journey {
   position: relative;
   height: 400vh;
@@ -250,11 +270,12 @@ img { max-width: 100%; display: block; }
 .chapter {
   width: 25%;
   height: 100%;
-  padding: 0 clamp(20px, 6vw, 80px);
+  padding: 0 clamp(20px, 5vw, 72px) 26vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: none;
+  align-items: flex-start;
+  transition: opacity 0.2s linear;
 }
 .chapter h2 {
   margin: 0;
@@ -263,12 +284,12 @@ img { max-width: 100%; display: block; }
   letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--silver);
-  max-width: 14ch;
+  max-width: 12ch;
 }
 .chapter p:not(.kicker) {
   margin: 16px 0 0;
   color: var(--muted);
-  max-width: 40ch;
+  max-width: 36ch;
   line-height: 1.55;
   font-size: 1.05rem;
 }
@@ -292,7 +313,6 @@ img { max-width: 100%; display: block; }
   padding: clamp(72px, 12vh, 120px) clamp(16px, 4vw, 40px);
   max-width: 1100px;
   margin: 0 auto;
-  padding-right: max(clamp(16px, 4vw, 40px), min(280px, 30vw));
 }
 .section-head { margin-bottom: 36px; max-width: 640px; }
 .section-head h2,
@@ -383,11 +403,8 @@ img { max-width: 100%; display: block; }
 }
 .stack-grid p { margin: 0; color: var(--muted); line-height: 1.5; }
 
-.about-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 28px;
-  align-items: center;
+.about {
+  max-width: 760px;
 }
 .about-copy p {
   color: var(--muted);
@@ -417,16 +434,6 @@ img { max-width: 100%; display: block; }
   font-size: 0.95rem;
 }
 .about-stats span { color: var(--muted); font-size: 0.78rem; }
-.about-photo {
-  border: 1px solid var(--line);
-  overflow: hidden;
-}
-.about-photo img {
-  width: 100%;
-  height: 420px;
-  object-fit: cover;
-  object-position: center 18%;
-}
 
 .contact-panel {
   padding: clamp(28px, 5vw, 52px);
@@ -454,8 +461,8 @@ img { max-width: 100%; display: block; }
 
 .reveal {
   opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.75s ease, transform 0.75s ease;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
 }
 .reveal.in {
   opacity: 1;
@@ -463,17 +470,19 @@ img { max-width: 100%; display: block; }
 }
 
 @media (max-width: 980px) {
-  .cast {
-    width: min(140px, 34vw);
-    height: min(280px, 48vh);
-    right: 4px;
-    bottom: 0;
-    opacity: 0.92;
+  .hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding-bottom: 0;
   }
-  .cast.in-journey { display: none; }
-  .section { padding-right: clamp(16px, 4vw, 40px); }
-  .hero { grid-template-columns: 1fr; }
-  .hero-photo img { height: 48vh; }
+  .hero-stage {
+    min-height: 52vh;
+    order: -1;
+  }
+  .cast.mode-follow,
+  .cast.mode-journey {
+    display: none;
+  }
   .journey { height: auto; }
   .journey-pin {
     position: relative;
@@ -493,11 +502,11 @@ img { max-width: 100%; display: block; }
   }
   .journey-bar { display: none; }
   .stack-grid { grid-template-columns: 1fr 1fr; }
-  .about-grid { grid-template-columns: 1fr; }
   .nav-links { display: none; }
   .project { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 560px) {
   .stack-grid, .about-stats { grid-template-columns: 1fr; }
+  .hero-stage { min-height: 46vh; }
 }

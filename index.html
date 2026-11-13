@@ -6,7 +6,7 @@
     <title>Rohit Srivastav — Full-Stack Developer / DevOps</title>
     <meta
       name="description"
-      content="Rohit Srivastav — full-stack developer & devops. Cinematic portfolio. Games, browsers, SaaS."
+      content="Rohit Srivastav — full-stack developer & devops. Cinematic scroll portfolio. Games, browsers, SaaS."
     />
     <meta name="theme-color" content="#080808" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,13 +19,6 @@
   </head>
   <body>
     <div class="progress" id="scroll-progress" aria-hidden="true"></div>
-    <div class="scanlines" aria-hidden="true"></div>
-
-    <!-- Floating character — transparent canvas, scroll-scrubbed (no box) -->
-    <aside class="cast" id="cast" aria-hidden="true">
-      <canvas id="cast-canvas" width="360" height="720"></canvas>
-      <div class="cast-ground"></div>
-    </aside>
 
     <header class="nav">
       <a class="logo" href="#top">ROHIT<span>SRI</span></a>
@@ -40,29 +33,33 @@
     </header>
 
     <main id="top">
-      <!-- HERO -->
+      <!-- HERO: copy left, animated character right (no photo) -->
       <section class="scene hero" data-scene="greet" data-label="HELLO">
         <div class="hero-inner">
-          <p class="mono kicker reveal">FULL-STACK DEVELOPER · DEVOPS</p>
-          <h1 class="hero-name reveal">
+          <p class="mono kicker">FULL-STACK DEVELOPER · DEVOPS</p>
+          <h1 class="hero-name">
             <span class="silver">ROHIT</span>
             <span class="crimson">SRIVASTAV</span>
           </h1>
-          <p class="hero-line reveal">
+          <p class="hero-line">
             I don’t ship résumés. I ship products — games, browsers, and SaaS — with the whole loop owned.
           </p>
-          <div class="hero-actions reveal">
+          <div class="hero-actions">
             <a class="btn btn-red" href="#journey">Start the journey →</a>
             <a class="btn btn-chrome" href="#work">See work</a>
           </div>
-          <p class="scroll-hint mono reveal">SCROLL TO WALK WITH ME</p>
+          <p class="scroll-hint mono">SCROLL TO WALK WITH ME</p>
         </div>
-        <div class="hero-photo reveal">
-          <img src="./rohit.jpg" alt="Rohit Srivastav" />
+
+        <div class="hero-stage" id="hero-stage" aria-hidden="true">
+          <aside class="cast mode-hero on" id="cast">
+            <canvas id="cast-canvas" width="420" height="840"></canvas>
+            <div class="cast-ground"></div>
+          </aside>
         </div>
       </section>
 
-      <!-- PINNED JOURNEY: character walks through career chapters -->
+      <!-- PINNED JOURNEY -->
       <section class="journey" id="journey">
         <div class="journey-pin" id="journey-pin">
           <div class="journey-track" id="journey-track">
@@ -91,7 +88,6 @@
         </div>
       </section>
 
-      <!-- WORK -->
       <section class="scene section" id="work" data-scene="typing" data-label="WORK">
         <div class="section-head reveal">
           <p class="mono kicker">SELECTED WORK</p>
@@ -100,7 +96,6 @@
         <div class="project-list" id="project-list"></div>
       </section>
 
-      <!-- STACK -->
       <section class="scene section" id="stack" data-scene="idle" data-label="STACK">
         <div class="section-head reveal">
           <p class="mono kicker">CAPABILITIES</p>
@@ -114,31 +109,24 @@
         </div>
       </section>
 
-      <!-- ABOUT -->
       <section class="scene section about" id="about" data-scene="think" data-label="ABOUT">
-        <div class="about-grid">
-          <div class="about-copy reveal">
-            <p class="mono kicker">ABOUT</p>
-            <h2>Rohit Srivastav</h2>
-            <p>
-              Full-stack developer &amp; devops. I like owning idea → architecture → UI → release.
-              Recent work spans anti-detect browsers
-              (<a href="https://beastbrowser.com" target="_blank" rel="noreferrer">BeastBrowser</a>),
-              landscape games, and Play-ready Android builds.
-            </p>
-            <div class="about-stats">
-              <div><strong id="repo-count">—</strong><span>public repos</span></div>
-              <div><strong>End-to-end</strong><span>ownership</span></div>
-              <div><strong>Ship</strong><span>over slides</span></div>
-            </div>
-          </div>
-          <div class="about-photo reveal">
-            <img src="./rohit.jpg" alt="Rohit Srivastav portrait" />
+        <div class="about-copy reveal">
+          <p class="mono kicker">ABOUT</p>
+          <h2>Rohit Srivastav</h2>
+          <p>
+            Full-stack developer &amp; devops. I like owning idea → architecture → UI → release.
+            Recent work spans anti-detect browsers
+            (<a href="https://beastbrowser.com" target="_blank" rel="noreferrer">BeastBrowser</a>),
+            landscape games, and Play-ready Android builds.
+          </p>
+          <div class="about-stats">
+            <div><strong id="repo-count">—</strong><span>public repos</span></div>
+            <div><strong>End-to-end</strong><span>ownership</span></div>
+            <div><strong>Ship</strong><span>over slides</span></div>
           </div>
         </div>
       </section>
 
-      <!-- CONTACT -->
       <section class="scene section contact" id="contact" data-scene="wave" data-label="CONTACT">
         <div class="contact-panel reveal">
           <p class="mono kicker">CONTACT</p>
@@ -154,7 +142,7 @@
 
     <footer class="footer">
       <span>© <span id="year"></span> Rohit Srivastav</span>
-      <span class="mono">SCROLL-DRIVEN · 2D CHARACTER · LIVE</span>
+      <span class="mono">SCROLL-DRIVEN · 2D CHARACTER</span>
     </footer>
 
     <script src="./app.js" type="module"></script>
