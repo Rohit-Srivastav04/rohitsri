@@ -2,38 +2,36 @@ const FEATURED = [
   {
     name: 'We Can Do Devil',
     blurb:
-      'Landscape Android platformer — 30 tricky levels, Capacitor + AdMob, signed Play builds, live privacy & app-ads.txt.',
-    tags: ['TypeScript', 'Capacitor', 'Android', 'AdMob'],
+      'Landscape Android platformer — 30 levels, Capacitor + AdMob, signed Play builds.',
+    tags: ['TypeScript', 'Capacitor', 'Android'],
     href: 'https://rohit-srivastav04.github.io/',
     kind: 'Game',
   },
   {
     name: 'BeastBrowser',
     blurb:
-      'Anti-detect browser product ecosystem — isolated profiles, proxies, and platform-ready fingerprints. Live at beastbrowser.com.',
+      'Anti-detect browser SaaS — isolated profiles, proxies, fingerprints. Live product.',
     tags: ['SaaS', 'Chromium', 'Product'],
     href: 'https://beastbrowser.com',
     kind: 'SaaS',
   },
   {
-    name: 'BeastPhone AOSP Build Kit',
-    blurb:
-      'Open-source kit to build Android 14 guest images (GSI + emu64x + initrd) for BeastBrowser crosvm / WHPX runtime.',
-    tags: ['Android', 'AOSP', 'Shell', 'Virtualization'],
+    name: 'BeastPhone AOSP Kit',
+    blurb: 'Android 14 guest image kit for BeastBrowser crosvm / WHPX runtime.',
+    tags: ['AOSP', 'Shell', 'Systems'],
     href: 'https://github.com/Rohit-Srivastav04/beastphone-aosp-build-kit',
     kind: 'Systems',
   },
   {
     name: 'Killer Aaloo',
-    blurb:
-      '2D side-scrolling run-and-gun — 30 levels, bosses, and mobile landscape controls.',
-    tags: ['TypeScript', 'Game', 'Mobile'],
+    blurb: '2D run-and-gun — 30 levels, bosses, landscape mobile controls.',
+    tags: ['TypeScript', 'Game'],
     href: 'https://github.com/Rohit-Srivastav04/killer-aaloo',
     kind: 'Game',
   },
   {
     name: 'VarFox Browser',
-    blurb: 'Windows browser release line — packaging and distribution for desktop.',
+    blurb: 'Windows browser release line — packaging & distribution.',
     tags: ['Windows', 'Browser'],
     href: 'https://github.com/Rohit-Srivastav04/varfox',
     kind: 'Product',
@@ -41,13 +39,13 @@ const FEATURED = [
   {
     name: 'Beast Traffic API',
     blurb: 'API & traffic tooling for the BeastBrowser ecosystem.',
-    tags: ['API', 'SaaS', 'HTML'],
+    tags: ['API', 'SaaS'],
     href: 'https://github.com/Rohit-Srivastav04/beast-traffic-api',
     kind: 'SaaS',
   },
   {
     name: 'Yaad Rakho',
-    blurb: 'Android utility app in Kotlin — memory / reminder focused product.',
+    blurb: 'Android utility app in Kotlin.',
     tags: ['Kotlin', 'Android'],
     href: 'https://github.com/Rohit-Srivastav04/yaad-rakho',
     kind: 'App',
@@ -61,23 +59,16 @@ const FEATURED = [
   },
   {
     name: 'Database Console',
-    blurb: 'Web database tooling deployed on Vercel.',
+    blurb: 'Web database tooling on Vercel.',
     tags: ['JavaScript', 'Vercel'],
     href: 'https://database-cyan-delta.vercel.app',
     kind: 'Web',
   },
   {
     name: 'Codveda Internship',
-    blurb: 'Python project set from Codveda Technologies internship — utilities & practice systems.',
-    tags: ['Python', 'Internship'],
+    blurb: 'Python project set from Codveda Technologies internship.',
+    tags: ['Python'],
     href: 'https://github.com/Rohit-Srivastav04/Codveda-Internship-Project',
-    kind: 'Backend',
-  },
-  {
-    name: 'File Encryption',
-    blurb: 'Python Level-3 file encryption utilities.',
-    tags: ['Python', 'Security'],
-    href: 'https://github.com/Rohit-Srivastav04/Level3_FileEncryption',
     kind: 'Backend',
   },
 ];
@@ -93,15 +84,8 @@ const SKIP = new Set([
   'beastbrowser-chromium-148-backup',
   'Codveda-Internship-Projects',
   'Level2_ToDoList',
+  'rohitsri',
 ]);
-
-const roles = [
-  'Building games',
-  'Shipping Android apps',
-  'Crafting SaaS tools',
-  'Packaging browsers',
-  'Full-stack shipping',
-];
 
 function projectCard(p, i) {
   const el = document.createElement('a');
@@ -116,16 +100,9 @@ function projectCard(p, i) {
       <p>${p.blurb}</p>
       <div class="tags">${(p.tags || []).map((t) => `<span class="tag">${t}</span>`).join('')}</div>
     </div>
-    <div class="project-link">open ↗</div>
+    <div class="project-link">OPEN ↗</div>
   `;
   return el;
-}
-
-function renderProjects(list) {
-  const root = document.getElementById('project-list');
-  root.innerHTML = '';
-  list.forEach((p, i) => root.appendChild(projectCard(p, i)));
-  observeReveals();
 }
 
 function observeReveals() {
@@ -138,9 +115,16 @@ function observeReveals() {
         }
       });
     },
-    { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+    { threshold: 0.12, rootMargin: '0px 0px -6% 0px' }
   );
   document.querySelectorAll('.reveal:not(.in)').forEach((el) => io.observe(el));
+}
+
+function renderProjects(list) {
+  const root = document.getElementById('project-list');
+  root.innerHTML = '';
+  list.forEach((p, i) => root.appendChild(projectCard(p, i)));
+  observeReveals();
 }
 
 async function hydrateFromGitHub() {
@@ -159,48 +143,35 @@ async function hydrateFromGitHub() {
     const known = new Set(FEATURED.map((f) => f.name.toLowerCase()));
     const extras = repos
       .filter((r) => !r.fork && !SKIP.has(r.name))
-      .filter((r) => !known.has(r.name.replace(/-/g, ' ').toLowerCase()) && !known.has(r.name.toLowerCase()))
       .filter((r) => r.description || r.homepage)
-      .slice(0, 4)
+      .filter((r) => !known.has(r.name.toLowerCase()))
+      .slice(0, 3)
       .map((r) => ({
         name: r.name,
         blurb: r.description || 'Open-source project on GitHub.',
-        tags: [r.language, ...(r.topics || [])].filter(Boolean).slice(0, 4),
+        tags: [r.language, ...(r.topics || [])].filter(Boolean).slice(0, 3),
         href: r.homepage || r.html_url,
         kind: 'GitHub',
       }));
-
-    // Prefer curated FEATURED order; append fresh extras not already covered by href/name
-    const featuredHrefs = new Set(FEATURED.map((f) => f.href));
-    const merged = [
-      ...FEATURED,
-      ...extras.filter((e) => !featuredHrefs.has(e.href)),
-    ];
-    renderProjects(merged);
+    const hrefs = new Set(FEATURED.map((f) => f.href));
+    renderProjects([...FEATURED, ...extras.filter((e) => !hrefs.has(e.href))]);
   } catch {
-    // offline / rate-limit — curated list still shows
+    /* curated list still shows */
   }
 }
 
-function rotateRoles() {
-  const el = document.getElementById('role-rotate');
-  if (!el) return;
-  let i = 0;
-  setInterval(() => {
-    i = (i + 1) % roles.length;
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(6px)';
-    setTimeout(() => {
-      el.textContent = roles[i];
-      el.style.opacity = '1';
-      el.style.transform = 'translateY(0)';
-    }, 220);
-  }, 2400);
-  el.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+function setupMenu() {
+  const btn = document.getElementById('menu-btn');
+  const links = document.getElementById('nav-links');
+  if (!btn || !links) return;
+  btn.addEventListener('click', () => links.classList.toggle('open'));
+  links.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => links.classList.remove('open'))
+  );
 }
 
 document.getElementById('year').textContent = String(new Date().getFullYear());
+setupMenu();
 renderProjects(FEATURED);
 observeReveals();
-rotateRoles();
 hydrateFromGitHub();
