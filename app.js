@@ -170,8 +170,77 @@ function setupMenu() {
   );
 }
 
+const ANIMS = {
+  idle: {
+    frames: [
+      './character/idle/frame-01.png',
+      './character/idle/frame-02.png',
+      './character/idle/frame-03.png',
+      './character/idle/frame-04.png',
+      './character/idle/frame-05.png',
+      './character/idle/frame-06.png',
+    ],
+    fps: 6,
+  },
+  wave: {
+    frames: [
+      './character/wave/frame-01.png',
+      './character/wave/frame-02.png',
+      './character/wave/frame-03.png',
+      './character/wave/frame-04.png',
+      './character/wave/frame-05.png',
+      './character/wave/frame-06.png',
+    ],
+    fps: 8,
+  },
+};
+
+function setupCharacterAnim() {
+  const img = document.getElementById('hero-char');
+  if (!img) return;
+  let mode = 'idle';
+  let i = 0;
+  let acc = 0;
+  let last = performance.now();
+
+  // preload
+  Object.values(ANIMS).forEach((a) =>
+    a.frames.forEach((src) => {
+      const x = new Image();
+      x.src = src;
+    })
+  );
+
+  function tick(now) {
+    const dt = (now - last) / 1000;
+    last = now;
+    const anim = ANIMS[mode];
+    acc += dt;
+    const step = 1 / anim.fps;
+    while (acc >= step) {
+      acc -= step;
+      i = (i + 1) % anim.frames.length;
+      img.src = anim.frames[i];
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  document.querySelectorAll('.char-controls [data-anim]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      mode = btn.getAttribute('data-anim') || 'idle';
+      i = 0;
+      acc = 0;
+      document.querySelectorAll('.char-controls button').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      img.src = ANIMS[mode].frames[0];
+    });
+  });
+}
+
 document.getElementById('year').textContent = String(new Date().getFullYear());
 setupMenu();
+setupCharacterAnim();
 renderProjects(FEATURED);
 observeReveals();
 hydrateFromGitHub();

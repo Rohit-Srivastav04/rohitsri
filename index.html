@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>rohitsri — Full-Stack / DevOps</title>
+    <title>Rohit Srivastav — rohitsri · devops</title>
     <meta
       name="description"
-      content="rohitsri — full-stack developer & devops. Games, browsers, SaaS. Black · Silver · Crimson."
+      content="Rohit Srivastav (rohitsri) — full-stack developer & devops. Games, browsers, SaaS."
     />
     <meta name="theme-color" content="#080808" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,9 +22,7 @@
     <div class="grain" aria-hidden="true"></div>
 
     <header class="nav">
-      <button class="nav-burger" id="menu-btn" aria-label="Menu" type="button">
-        <span></span><span></span>
-      </button>
+      <button class="nav-burger" id="menu-btn" aria-label="Menu" type="button"><span></span><span></span></button>
       <a class="logo" href="#top">ROHIT<span>SRI</span></a>
       <nav class="nav-links" id="nav-links">
         <a href="#work">Work</a>
@@ -32,38 +30,47 @@
         <a href="#about">About</a>
         <a href="#contact">Contact</a>
       </nav>
-      <a class="nav-cta" href="https://github.com/Rohit-Srivastav04" target="_blank" rel="noreferrer">Get Early Access</a>
+      <a class="nav-cta" href="https://github.com/Rohit-Srivastav04" target="_blank" rel="noreferrer">GitHub</a>
     </header>
 
     <main id="top">
-      <!-- HERO: one composition — brand + headline + CTA + full-bleed photo -->
       <section class="hero">
         <div class="hero-copy">
-          <p class="hero-kicker mono reveal">PRODUCT · GAMES · SYSTEMS</p>
+          <p class="hero-kicker mono reveal">FULL-STACK · DEVOPS · PRODUCTS</p>
           <h1 class="hero-title reveal">
-            <span class="silver">THE NEXT</span><br />
-            <span class="crimson">HUMAN</span><br />
-            <span class="silver">INTERFACE</span>
+            <span class="silver">ROHIT</span><br />
+            <span class="crimson">SRIVASTAV</span>
           </h1>
           <p class="hero-brand reveal">rohitsri · <span class="crimson">devops</span></p>
           <p class="hero-sub reveal">
-            Full-stack developer shipping Android games, anti-detect browsers, and SaaS tooling — end to end.
+            I ship Android games, anti-detect browsers, and SaaS tooling — end to end.
           </p>
           <div class="hero-actions reveal">
-            <a class="btn btn-red" href="#work">Explore Now <span class="arrow">→</span></a>
+            <a class="btn btn-red" href="#work">Explore Work <span class="arrow">→</span></a>
             <a class="btn btn-chrome" href="https://github.com/Rohit-Srivastav04" target="_blank" rel="noreferrer">GitHub</a>
           </div>
         </div>
 
         <div class="hero-visual reveal">
-          <div class="photo-frame">
-            <img src="./rohit.jpg" alt="Rohit Srivastav" width="448" height="589" />
-            <div class="photo-glow" aria-hidden="true"></div>
-            <div class="photo-badge mono">ONLINE · BUILDING</div>
+          <div class="char-stage">
+            <img
+              id="hero-char"
+              class="char-2d"
+              src="./character/idle/frame-01.png"
+              alt="Rohit Srivastav 2D character"
+              width="420"
+              height="560"
+            />
+            <div class="char-glow" aria-hidden="true"></div>
+            <div class="photo-badge mono">2D · LIVE IDLE</div>
+          </div>
+          <div class="char-controls mono">
+            <button type="button" data-anim="idle" class="active">IDLE</button>
+            <button type="button" data-anim="wave">WAVE</button>
           </div>
           <div class="hud mono" aria-hidden="true">
-            <span>SYS.OK</span>
-            <span>FPS 60</span>
+            <span>ROHIT SRIVASTAV</span>
+            <span>2D PNG</span>
             <span>v2026</span>
           </div>
         </div>
@@ -72,9 +79,9 @@
       <section class="ticker" aria-hidden="true">
         <div class="ticker-track">
           <span>OBSIDIAN</span><span>#080808</span><span>CHROME SILVER</span><span>#CDCBCA</span>
-          <span>LASER CRIMSON</span><span>#D41514</span><span>FULL-STACK</span><span>DEVOPS</span>
+          <span>LASER CRIMSON</span><span>#D41514</span><span>ROHIT SRIVASTAV</span><span>DEVOPS</span>
           <span>OBSIDIAN</span><span>#080808</span><span>CHROME SILVER</span><span>#CDCBCA</span>
-          <span>LASER CRIMSON</span><span>#D41514</span><span>FULL-STACK</span><span>DEVOPS</span>
+          <span>LASER CRIMSON</span><span>#D41514</span><span>ROHIT SRIVASTAV</span><span>DEVOPS</span>
         </div>
       </section>
 
@@ -82,7 +89,7 @@
         <div class="section-head reveal">
           <p class="mono eyebrow">01 // SELECTED WORK</p>
           <h2>Shipped <span class="crimson">products</span></h2>
-          <p class="section-sub">Games, browsers, APIs — pulled from my GitHub and live launches.</p>
+          <p class="section-sub">Games, browsers, APIs — from GitHub + live launches.</p>
         </div>
         <div class="project-list" id="project-list"></div>
       </section>
@@ -93,28 +100,25 @@
           <h2>Weapons of <span class="crimson">choice</span></h2>
         </div>
         <div class="stack-grid">
-          <article class="reveal"><h3>Frontend</h3><p>TypeScript · React/Next · Vite · Canvas game UI</p></article>
-          <article class="reveal"><h3>Mobile</h3><p>Kotlin · Android · Capacitor · Play shipping</p></article>
-          <article class="reveal"><h3>SaaS / API</h3><p>Node · traffic tooling · Vercel · auth flows</p></article>
-          <article class="reveal"><h3>Systems</h3><p>Chromium · AOSP kits · crosvm/WHPX · Shell</p></article>
+          <article class="reveal"><h3>Frontend</h3><p>TypeScript · React/Next · Vite · Canvas</p></article>
+          <article class="reveal"><h3>Mobile</h3><p>Kotlin · Android · Capacitor · Play</p></article>
+          <article class="reveal"><h3>SaaS / API</h3><p>Node · traffic tooling · Vercel</p></article>
+          <article class="reveal"><h3>Systems</h3><p>Chromium · AOSP · crosvm/WHPX</p></article>
         </div>
       </section>
 
       <section id="about" class="section about">
         <div class="about-layout">
           <div class="about-photo reveal">
-            <img src="./rohit.jpg" alt="" aria-hidden="true" />
+            <img src="./rohit.jpg" alt="Rohit Srivastav" />
           </div>
           <div class="about-copy reveal">
             <p class="mono eyebrow">03 // ABOUT</p>
-            <h2>Rohit · <span class="crimson">devops</span></h2>
+            <h2>Rohit <span class="crimson">Srivastav</span></h2>
             <p>
-              I don’t do template portfolios. I ship real builds — signed AABs, live privacy pages,
-              playable games, and browser ecosystems like
-              <a href="https://beastbrowser.com" target="_blank" rel="noreferrer">BeastBrowser</a>.
-            </p>
-            <p>
-              Full loop ownership: architecture → UI → native packaging → release.
+              Full-stack developer &amp; devops. I own the loop — architecture → UI → native packaging → release.
+              Products like <a href="https://beastbrowser.com" target="_blank" rel="noreferrer">BeastBrowser</a>,
+              mobile games, and Play-ready builds.
             </p>
             <div class="about-stats">
               <div><strong id="repo-count">—</strong><span>repos</span></div>
@@ -129,7 +133,7 @@
         <div class="contact-panel reveal">
           <p class="mono eyebrow">04 // CONTACT</p>
           <h2>Ready when <span class="crimson">you</span> are.</h2>
-          <p>Games · SaaS · Android · browser systems.</p>
+          <p>Rohit Srivastav — games · SaaS · Android · browsers.</p>
           <div class="hero-actions">
             <a class="btn btn-red" href="https://github.com/Rohit-Srivastav04" target="_blank" rel="noreferrer">Open GitHub →</a>
             <a class="btn btn-chrome" href="https://rohit-srivastav04.github.io/" target="_blank" rel="noreferrer">Play We Can Do Devil</a>
@@ -139,7 +143,7 @@
     </main>
 
     <footer class="footer">
-      <span>© <span id="year"></span> rohitsri</span>
+      <span>© <span id="year"></span> Rohit Srivastav · rohitsri</span>
       <span class="mono">BLACK · SILVER · CRIMSON</span>
     </footer>
 
