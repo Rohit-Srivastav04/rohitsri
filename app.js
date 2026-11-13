@@ -1,49 +1,49 @@
 const FEATURED = [
   {
     name: 'We Can Do Devil',
-    blurb: 'Landscape Android platformer — Capacitor, AdMob, Play-ready builds.',
+    blurb: 'Landscape Android platformer with ads and Play-ready builds.',
     tags: ['TypeScript', 'Android', 'Capacitor'],
     href: 'https://rohit-srivastav04.github.io/',
     kind: 'Game',
   },
   {
     name: 'BeastBrowser',
-    blurb: 'Anti-detect browser SaaS — profiles, proxies, fingerprints.',
+    blurb: 'Anti-detect browser SaaS for profiles, proxies, and fingerprints.',
     tags: ['SaaS', 'Chromium', 'Product'],
     href: 'https://beastbrowser.com',
     kind: 'SaaS',
   },
   {
     name: 'BeastPhone AOSP Kit',
-    blurb: 'Android 14 guest image kit for crosvm / WHPX runtime.',
+    blurb: 'Android 14 guest image kit for crosvm and WHPX.',
     tags: ['AOSP', 'Shell', 'Systems'],
     href: 'https://github.com/Rohit-Srivastav04/beastphone-aosp-build-kit',
     kind: 'Systems',
   },
   {
     name: 'Killer Aaloo',
-    blurb: '2D run-and-gun — 30 levels, bosses, landscape controls.',
+    blurb: '2D run-and-gun with 30 levels and landscape controls.',
     tags: ['TypeScript', 'Game'],
     href: 'https://github.com/Rohit-Srivastav04/killer-aaloo',
     kind: 'Game',
   },
   {
     name: 'VarFox Browser',
-    blurb: 'Windows browser release packaging & distribution.',
+    blurb: 'Windows browser packaging and release distribution.',
     tags: ['Windows', 'Browser'],
     href: 'https://github.com/Rohit-Srivastav04/varfox',
     kind: 'Product',
   },
   {
     name: 'Beast Traffic API',
-    blurb: 'API & traffic tooling for BeastBrowser ecosystem.',
+    blurb: 'API and traffic tooling for the BeastBrowser stack.',
     tags: ['API', 'SaaS'],
     href: 'https://github.com/Rohit-Srivastav04/beast-traffic-api',
     kind: 'SaaS',
   },
   {
     name: 'Yaad Rakho',
-    blurb: 'Android utility app in Kotlin.',
+    blurb: 'Android utility app built in Kotlin.',
     tags: ['Kotlin', 'Android'],
     href: 'https://github.com/Rohit-Srivastav04/yaad-rakho',
     kind: 'App',
@@ -57,7 +57,6 @@ const FEATURED = [
   },
 ];
 
-/** High-res cinematic PNG sequences (not GIF) */
 const CINE = {
   idle: { folder: 'cine/idle', count: 4, fps: 2.4 },
   walk: { folder: 'cine/walk', count: 8, fps: 9 },
@@ -72,6 +71,7 @@ const LOOK = {
   down: './character/cine/look/down.png',
 };
 
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cache = new Map();
 
 function frameUrl(clip, i) {
@@ -125,6 +125,10 @@ function renderProjects(list) {
 }
 
 function observeReveals() {
+  if (reducedMotion) {
+    document.querySelectorAll('.reveal').forEach((el) => el.classList.add('in'));
+    return;
+  }
   const io = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
@@ -139,6 +143,51 @@ function observeReveals() {
   document.querySelectorAll('.reveal:not(.in)').forEach((el) => io.observe(el));
 }
 
+function setupNav() {
+  const links = [...document.querySelectorAll('[data-nav]')];
+  const sections = links
+    .map((a) => document.querySelector(a.getAttribute('href')))
+    .filter(Boolean);
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((e) => e.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      const id = `#${visible.target.id}`;
+      links.forEach((a) => a.classList.toggle('is-active', a.getAttribute('href') === id));
+    },
+    { rootMargin: '-35% 0px -50% 0px', threshold: [0.1, 0.35, 0.6] }
+  );
+  sections.forEach((s) => io.observe(s));
+
+  const toggle = document.getElementById('nav-toggle');
+  const mobile = document.getElementById('mobile-nav');
+  if (!toggle || !mobile) return;
+
+  const close = () => {
+    mobile.hidden = true;
+    mobile.classList.remove('is-open');
+    mobile.setAttribute('aria-hidden', 'true');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Open menu');
+  };
+  const open = () => {
+    mobile.hidden = false;
+    mobile.classList.add('is-open');
+    mobile.setAttribute('aria-hidden', 'false');
+    toggle.setAttribute('aria-expanded', 'true');
+    toggle.setAttribute('aria-label', 'Close menu');
+  };
+
+  toggle.addEventListener('click', () => {
+    if (mobile.hidden) open();
+    else close();
+  });
+  mobile.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+}
+
 function setCastMode(cast, mode) {
   cast.classList.remove('mode-hero', 'mode-follow', 'mode-journey');
   cast.classList.add(mode, 'on');
@@ -148,21 +197,15 @@ function setCastMode(cast, mode) {
   }
 }
 
-/**
- * Cinematic PNG image-sequence cast
- * - Transparent high-res PNGs on slate stage
- * - Mouse look swaps look PNGs (no GIF loop)
- * - Idle / walk / wave are discrete PNG frames
- */
 function setupCinematicCast() {
   const cast = document.getElementById('cast');
   const canvas = document.getElementById('cast-canvas');
   const hero = document.querySelector('.hero');
   const heroStage = document.getElementById('hero-stage');
+  const frame = heroStage?.querySelector('.frame');
   const progress = document.getElementById('scroll-progress');
-  if (!cast || !canvas || !hero || !heroStage) return;
+  if (!cast || !canvas || !hero || !heroStage || !frame) return;
 
-  // higher internal res for crisp PNGs
   canvas.width = 540;
   canvas.height = 960;
 
@@ -172,7 +215,6 @@ function setupCinematicCast() {
   let needsDraw = true;
   let drawnKey = '';
   let last = performance.now();
-
   let mx = 0;
   let my = 0;
   let tx = 0;
@@ -196,11 +238,11 @@ function setupCinematicCast() {
       const cw = canvas.width;
       const ch = canvas.height;
       ctx.clearRect(0, 0, cw, ch);
-      const scale = Math.min(cw / img.width, ch / img.height) * 0.94;
+      const scale = Math.min(cw / img.width, ch / img.height) * 0.96;
       const dw = img.width * scale;
       const dh = img.height * scale;
-      const ox = parallax ? mx * 10 : 0;
-      const oy = parallax ? my * 6 : 0;
+      const ox = parallax && !reducedMotion ? mx * 8 : 0;
+      const oy = parallax && !reducedMotion ? my * 5 : 0;
       ctx.drawImage(img, (cw - dw) / 2 + ox, ch - dh + oy, dw, dh);
       drawnKey = key;
       needsDraw = false;
@@ -237,7 +279,7 @@ function setupCinematicCast() {
   window.addEventListener(
     'pointermove',
     (e) => {
-      if (window.innerWidth <= 980) return;
+      if (window.innerWidth <= 980 || reducedMotion) return;
       onPointer(e.clientX, e.clientY);
       idleTimer = 0;
     },
@@ -250,7 +292,7 @@ function setupCinematicCast() {
   const chapters = [...document.querySelectorAll('.chapter')];
 
   function placeCastInHero() {
-    if (cast.parentElement !== heroStage) heroStage.appendChild(cast);
+    if (cast.parentElement !== frame) frame.appendChild(cast);
     setCastMode(cast, 'mode-hero');
     mode = 'mode-hero';
   }
@@ -337,8 +379,8 @@ function setupCinematicCast() {
     my += (ty - my) * Math.min(1, dt * 9);
     idleTimer += dt;
 
-    if (mode === 'mode-hero' && !inJourney) {
-      cast.style.transform = `translate3d(${mx * 16}px, ${my * 10}px, 0)`;
+    if (mode === 'mode-hero' && !inJourney && !reducedMotion) {
+      cast.style.transform = `translate3d(${mx * 14}px, ${my * 8}px, 0)`;
     }
 
     if (idleTimer > 2.6) {
@@ -369,7 +411,7 @@ function setupCinematicCast() {
       return;
     }
 
-    if (oneShot) {
+    if (oneShot && !reducedMotion) {
       const clip = CINE[oneShot.name];
       oneShot.acc += dt;
       const step = 1 / clip.fps;
@@ -390,7 +432,7 @@ function setupCinematicCast() {
     }
 
     const moving = Math.hypot(tx - mx, ty - my) > 0.002 || Math.hypot(mx, my) > 0.1;
-    if (hasMouse && moving) {
+    if (hasMouse && moving && !reducedMotion) {
       const look = lookSource();
       paint(look.src, { key: look.key });
     } else {
@@ -423,6 +465,7 @@ async function hydrateFromGitHub() {
 
 document.getElementById('year').textContent = String(new Date().getFullYear());
 preloadAll();
+setupNav();
 setupCinematicCast();
 renderProjects(FEATURED);
 observeReveals();

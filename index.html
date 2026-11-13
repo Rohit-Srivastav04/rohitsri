@@ -2,120 +2,159 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Rohit Srivastav — Full-Stack Developer / DevOps</title>
     <meta
       name="description"
-      content="Rohit Srivastav — full-stack developer & devops. Cinematic scroll portfolio. Games, browsers, SaaS."
+      content="Rohit Srivastav builds games, browsers, and SaaS end to end — full-stack developer and devops."
     />
     <meta name="theme-color" content="#080808" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="progress" id="scroll-progress" aria-hidden="true"></div>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-dots" aria-hidden="true"></div>
 
     <header class="nav">
-      <a class="logo" href="#top">ROHIT<span>SRI</span></a>
-      <nav class="nav-links">
-        <a href="#journey">Journey</a>
-        <a href="#work">Work</a>
-        <a href="#stack">Stack</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+      <a class="logo" href="#top" aria-label="Rohit Sri home">
+        <span class="logo-mark" aria-hidden="true"></span>
+        <span class="logo-text">ROHIT<span>SRI</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#journey" data-nav>Journey</a>
+        <a href="#work" data-nav>Work</a>
+        <a href="#stack" data-nav>Stack</a>
+        <a href="#about" data-nav>About</a>
+        <a href="#contact" data-nav>Contact</a>
       </nav>
-      <a class="nav-cta" href="https://github.com/Rohit-Srivastav04" target="_blank" rel="noreferrer">GitHub</a>
+      <a
+        class="nav-cta"
+        href="https://github.com/Rohit-Srivastav04"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+          />
+        </svg>
+        GitHub
+      </a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
     </header>
 
+    <div class="mobile-nav" id="mobile-nav" hidden aria-hidden="true">
+      <a href="#journey">Journey</a>
+      <a href="#work">Work</a>
+      <a href="#stack">Stack</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+
     <main id="top">
-      <!-- HERO: copy left, animated character right (no photo) -->
-      <section class="scene hero" data-scene="greet" data-label="HELLO">
-        <div class="hero-inner">
-          <p class="mono kicker">FULL-STACK DEVELOPER · DEVOPS</p>
+      <section class="hero" data-scene="idle">
+        <div class="hero-copy">
+          <p class="kicker">Full-stack developer · DevOps</p>
           <h1 class="hero-name">
-            <span class="silver">ROHIT</span>
-            <span class="crimson">SRIVASTAV</span>
+            <span class="name-white">ROHIT</span>
+            <span class="name-red">SRIVASTAV</span>
           </h1>
           <p class="hero-line">
             I don’t ship résumés. I ship products — games, browsers, and SaaS — with the whole loop owned.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-red" href="#journey">Start the journey →</a>
-            <a class="btn btn-chrome" href="#work">See work</a>
+            <a class="btn btn-red" href="#journey">
+              Start the journey
+              <span aria-hidden="true">→</span>
+            </a>
+            <a class="btn btn-ghost" href="#work">
+              <span class="play" aria-hidden="true"></span>
+              See work
+            </a>
           </div>
-          <p class="scroll-hint mono">MOVE MOUSE · SCROLL TO WALK</p>
+          <div class="scroll-cue" aria-hidden="true">
+            <span class="mouse"><i></i></span>
+            <span>Scroll to explore</span>
+          </div>
         </div>
 
-        <div class="hero-stage" id="hero-stage" aria-hidden="true">
-          <aside class="cast mode-hero on" id="cast">
-            <canvas id="cast-canvas" width="420" height="840"></canvas>
-            <div class="cast-ground"></div>
-          </aside>
+        <div class="hero-visual" id="hero-stage">
+          <div class="halo" aria-hidden="true"></div>
+          <div class="frame">
+            <aside class="cast mode-hero on" id="cast">
+              <canvas id="cast-canvas" width="540" height="960"></canvas>
+            </aside>
+          </div>
         </div>
       </section>
 
-      <!-- PINNED JOURNEY -->
       <section class="journey" id="journey">
-        <div class="journey-pin" id="journey-pin">
+        <div class="journey-pin">
           <div class="journey-track" id="journey-track">
-            <article class="chapter" data-scene="walk" data-label="WALKING IN">
-              <p class="mono kicker">01 — ORIGIN</p>
-              <h2>From code practice to product shipping</h2>
-              <p>Python systems, internships, and the obsession to finish what I start.</p>
+            <article class="chapter">
+              <p class="kicker">01 — Origin</p>
+              <h2>From practice to real shipping</h2>
+              <p>Python systems, internships, and a habit of finishing what I start.</p>
             </article>
-            <article class="chapter" data-scene="think" data-label="THINKING">
-              <p class="mono kicker">02 — SYSTEMS</p>
+            <article class="chapter">
+              <p class="kicker">02 — Systems</p>
               <h2>Browsers, VMs, hard problems</h2>
-              <p>BeastBrowser · AOSP kits · Chromium packaging · real infrastructure taste.</p>
+              <p>BeastBrowser, AOSP kits, Chromium packaging — real infrastructure work.</p>
             </article>
-            <article class="chapter" data-scene="typing" data-label="BUILDING">
-              <p class="mono kicker">03 — BUILD</p>
-              <h2>Apps &amp; games that launch</h2>
-              <p>Android / Capacitor / Play Console — signed AABs, ads, privacy, live pages.</p>
+            <article class="chapter">
+              <p class="kicker">03 — Build</p>
+              <h2>Apps and games that launch</h2>
+              <p>Android, Capacitor, Play Console — signed builds, ads, privacy, live pages.</p>
             </article>
-            <article class="chapter" data-scene="wave" data-label="SHIPPED">
-              <p class="mono kicker">04 — NOW</p>
-              <h2>Available for serious builds</h2>
-              <p>Full-stack + devops for products that need taste and delivery speed.</p>
+            <article class="chapter">
+              <p class="kicker">04 — Now</p>
+              <h2>Ready for serious builds</h2>
+              <p>Full-stack and devops for products that need taste and delivery speed.</p>
             </article>
           </div>
           <div class="journey-bar"><span id="journey-fill"></span></div>
         </div>
       </section>
 
-      <section class="scene section" id="work" data-scene="typing" data-label="WORK">
+      <section class="section" id="work" data-scene="idle">
         <div class="section-head reveal">
-          <p class="mono kicker">SELECTED WORK</p>
-          <h2>Things I’ve <span class="crimson">shipped</span></h2>
+          <p class="kicker">Selected work</p>
+          <h2>Things I’ve <span class="red">shipped</span></h2>
+          <p class="section-sub">Clear products. Clear links. No fluff.</p>
         </div>
         <div class="project-list" id="project-list"></div>
       </section>
 
-      <section class="scene section" id="stack" data-scene="idle" data-label="STACK">
+      <section class="section" id="stack" data-scene="idle">
         <div class="section-head reveal">
-          <p class="mono kicker">CAPABILITIES</p>
-          <h2>Stack I actually <span class="crimson">use</span></h2>
+          <p class="kicker">Capabilities</p>
+          <h2>Stack I actually <span class="red">use</span></h2>
         </div>
         <div class="stack-grid">
-          <article class="reveal"><h3>Frontend</h3><p>TypeScript, React/Next, Vite, Canvas game UI</p></article>
-          <article class="reveal"><h3>Mobile</h3><p>Kotlin, Android, Capacitor, Play shipping</p></article>
-          <article class="reveal"><h3>SaaS</h3><p>APIs, traffic tooling, auth, Vercel</p></article>
-          <article class="reveal"><h3>Systems</h3><p>Chromium, AOSP, crosvm/WHPX, Shell</p></article>
+          <article class="reveal"><h3>Frontend</h3><p>TypeScript, React, Next.js, Vite, canvas game UI</p></article>
+          <article class="reveal"><h3>Mobile</h3><p>Kotlin, Android, Capacitor, Play Store shipping</p></article>
+          <article class="reveal"><h3>SaaS</h3><p>APIs, auth, traffic tooling, Vercel</p></article>
+          <article class="reveal"><h3>Systems</h3><p>Chromium, AOSP, crosvm / WHPX, Shell</p></article>
         </div>
       </section>
 
-      <section class="scene section about" id="about" data-scene="think" data-label="ABOUT">
-        <div class="about-copy reveal">
-          <p class="mono kicker">ABOUT</p>
+      <section class="section about" id="about" data-scene="idle">
+        <div class="about-panel reveal">
+          <p class="kicker">About</p>
           <h2>Rohit Srivastav</h2>
           <p>
-            Full-stack developer &amp; devops. I like owning idea → architecture → UI → release.
-            Recent work spans anti-detect browsers
+            Full-stack developer and devops. I own the path from idea to architecture to UI to release.
+            Recent work includes anti-detect browsers
             (<a href="https://beastbrowser.com" target="_blank" rel="noreferrer">BeastBrowser</a>),
             landscape games, and Play-ready Android builds.
           </p>
@@ -127,14 +166,14 @@
         </div>
       </section>
 
-      <section class="scene section contact" id="contact" data-scene="wave" data-label="CONTACT">
+      <section class="section contact" id="contact" data-scene="wave">
         <div class="contact-panel reveal">
-          <p class="mono kicker">CONTACT</p>
-          <h2>Let’s build the <span class="crimson">next</span> one.</h2>
-          <p>Rohit Srivastav — games · SaaS · Android · browser systems.</p>
+          <p class="kicker">Contact</p>
+          <h2>Let’s build the <span class="red">next</span> one.</h2>
+          <p>Games · SaaS · Android · browser systems.</p>
           <div class="hero-actions">
             <a class="btn btn-red" href="https://github.com/Rohit-Srivastav04" target="_blank" rel="noreferrer">GitHub →</a>
-            <a class="btn btn-chrome" href="https://rohit-srivastav04.github.io/" target="_blank" rel="noreferrer">Play We Can Do Devil</a>
+            <a class="btn btn-ghost" href="https://rohit-srivastav04.github.io/" target="_blank" rel="noreferrer">Play We Can Do Devil</a>
           </div>
         </div>
       </section>
@@ -142,8 +181,10 @@
 
     <footer class="footer">
       <span>© <span id="year"></span> Rohit Srivastav</span>
-      <span class="mono">SCROLL-DRIVEN · 2D CHARACTER</span>
+      <span class="mono">Cinematic · PNG character · Responsive</span>
     </footer>
+
+    <div class="wave-accent" aria-hidden="true"></div>
 
     <script src="./app.js" type="module"></script>
   </body>
