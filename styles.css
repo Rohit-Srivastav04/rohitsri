@@ -203,25 +203,26 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .mobile-nav a:hover { background: rgba(212, 21, 20, 0.1); color: var(--fg); }
 
-/* Hero — character dominates (portfolio presented by movement) */
+/* Hero — layout follows full-body character (no crop) */
 .hero {
   position: relative;
   z-index: 2;
   min-height: calc(100svh - var(--nav-h));
   display: grid;
-  grid-template-columns: minmax(280px, 0.85fr) minmax(340px, 1.25fr);
-  gap: clamp(12px, 3vw, 36px);
-  align-items: stretch;
-  padding: clamp(16px, 3vh, 36px) clamp(12px, 3vw, 32px) 12px;
-  max-width: 1360px;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(300px, 1.1fr);
+  gap: clamp(8px, 2.5vw, 28px);
+  align-items: center;
+  padding: clamp(12px, 2.5vh, 28px) clamp(12px, 3vw, 36px) clamp(8px, 2vh, 20px);
+  max-width: 1280px;
   margin: 0 auto;
 }
 .hero-copy {
-  max-width: 32rem;
+  max-width: 30rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-bottom: 12px;
+  padding-bottom: 8px;
+  z-index: 3;
 }
 .hero-name {
   margin: 0;
@@ -317,51 +318,66 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   50% { opacity: 1; transform: translateY(6px); }
 }
 
-/* Character stage — LARGE (movement presents the portfolio) */
+/* Character stage — aspect locked to PNG body (never cut head/feet) */
 .hero-visual {
   position: relative;
-  min-height: calc(100svh - var(--nav-h) - 24px);
+  width: 100%;
   display: grid;
-  place-items: end center;
+  place-items: center;
+  align-self: stretch;
 }
 .halo {
   position: absolute;
-  width: min(92%, 620px);
+  width: min(88%, 520px);
   aspect-ratio: 1;
-  top: 6%;
+  top: 12%;
   left: 50%;
   transform: translateX(-50%);
   border-radius: 50%;
   background:
-    radial-gradient(circle, rgba(212, 21, 20, 0.4) 0%, rgba(212, 21, 20, 0.1) 42%, transparent 68%);
-  box-shadow: 0 0 100px rgba(212, 21, 20, 0.3);
+    radial-gradient(circle, rgba(212, 21, 20, 0.38) 0%, rgba(212, 21, 20, 0.08) 44%, transparent 70%);
+  box-shadow: 0 0 90px rgba(212, 21, 20, 0.28);
   animation: haloPulse 4.5s ease-in-out infinite;
   pointer-events: none;
 }
 @keyframes haloPulse {
   0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.85; }
-  50% { transform: translateX(-50%) scale(1.06); opacity: 1; }
+  50% { transform: translateX(-50%) scale(1.05); opacity: 1; }
 }
 .frame {
   position: relative;
   z-index: 2;
-  width: min(100%, 640px);
-  height: min(88vh, 820px);
-  border-radius: 22px;
-  border: 1px solid rgba(212, 21, 20, 0.4);
+  /* Width capped by viewport height so full PNG body fits (900×1400) */
+  width: min(100%, 500px, 40vw, calc((100svh - var(--nav-h) - 32px) * 900 / 1400));
+  aspect-ratio: 900 / 1400;
+  height: auto;
+  border-radius: 28px;
+  border: 1px solid rgba(212, 21, 20, 0.38);
   background:
-    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(212, 21, 20, 0.14), transparent 60%),
-    linear-gradient(180deg, #1a1f28 0%, #0c0e12 100%);
+    radial-gradient(ellipse 70% 45% at 50% 28%, rgba(212, 21, 20, 0.16), transparent 58%),
+    linear-gradient(180deg, #1c222c 0%, #0a0c10 72%, #070809 100%);
   box-shadow:
-    0 36px 70px rgba(0, 0, 0, 0.5),
+    0 32px 64px rgba(0, 0, 0, 0.5),
     inset 0 0 0 1px rgba(205, 203, 202, 0.06);
-  overflow: hidden;
+  overflow: visible;
+}
+.frame::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 4%;
+  height: 10%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55), transparent 70%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .cast {
   pointer-events: none;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
@@ -373,37 +389,45 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   position: absolute;
   inset: 0;
   pointer-events: auto;
+  padding: 2% 4% 4%;
 }
 .cast.mode-hero #cast-canvas {
-  width: auto;
+  width: 100%;
   height: 100%;
-  max-width: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
 }
 .cast.mode-follow {
   position: fixed;
   right: clamp(8px, 2.5vw, 24px);
   bottom: 0;
-  width: min(240px, 26vw);
-  height: min(480px, 72vh);
+  width: min(200px, 22vw);
+  aspect-ratio: 900 / 1400;
+  height: auto;
+  max-height: 62vh;
 }
 .cast.mode-follow #cast-canvas,
 .cast.mode-journey #cast-canvas {
   width: 100%;
-  height: auto;
-  max-height: 96%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
 }
 .cast.mode-journey {
   position: fixed;
-  bottom: 3vh;
+  bottom: 2vh;
   left: 48%;
-  width: min(260px, 28vw);
-  height: min(520px, 74vh);
+  width: min(220px, 24vw);
+  aspect-ratio: 900 / 1400;
+  height: auto;
+  max-height: 66vh;
   transition: left 0.04s linear;
   z-index: 35;
 }
 #cast-canvas {
   background: transparent !important;
-  filter: drop-shadow(0 28px 40px rgba(0, 0, 0, 0.55));
+  filter: drop-shadow(0 22px 36px rgba(0, 0, 0, 0.5));
 }
 
 /* Journey */
@@ -650,15 +674,15 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .hero {
     grid-template-columns: 1fr;
     min-height: auto;
-    padding-top: 28px;
+    padding-top: 20px;
+    gap: 8px;
   }
   .hero-visual {
     order: -1;
-    min-height: 58vh;
+    min-height: 0;
   }
   .frame {
-    width: min(100%, 520px);
-    height: min(62vh, 580px);
+    width: min(72vw, 340px, calc(58svh * 900 / 1400));
     margin: 0 auto;
   }
   .cast.mode-follow,
@@ -684,13 +708,16 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .stack-grid { grid-template-columns: 1fr 1fr; }
   .project { grid-template-columns: 1fr; }
   .bg-dots { opacity: 0.2; }
+  .scroll-cue { margin-top: 28px; }
 }
 
 @media (max-width: 560px) {
   .stack-grid,
   .about-stats { grid-template-columns: 1fr; }
   .hero-name { font-size: clamp(2.2rem, 12vw, 3.2rem); }
-  .frame { height: 56vh; }
+  .frame {
+    width: min(78vw, 300px, calc(50svh * 900 / 1400));
+  }
   .nav-cta span { display: none; }
 }
 

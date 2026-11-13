@@ -235,8 +235,9 @@ function setupCinematicCast() {
   const progress = document.getElementById('scroll-progress');
   if (!cast || !canvas || !hero || !heroStage || !frame) return;
 
-  canvas.width = 720;
-  canvas.height = 1280;
+  // Match tall PNG body (actions up to ~840×1400) — contain, never crop
+  canvas.width = 900;
+  canvas.height = 1400;
 
   const ctx = canvas.getContext('2d', { alpha: true });
   let mode = 'mode-hero';
@@ -270,13 +271,14 @@ function setupCinematicCast() {
       const cw = canvas.width;
       const ch = canvas.height;
       ctx.clearRect(0, 0, cw, ch);
-      // Fill stage — character is the hero of the portfolio
-      const scale = Math.min(cw / img.width, ch / img.height) * 1.12;
+      // Full body always visible (contain + pad) — layout sized to character
+      const pad = 0.94;
+      const scale = Math.min(cw / img.width, ch / img.height) * pad;
       const dw = img.width * scale;
       const dh = img.height * scale;
-      const ox = parallax && !reducedMotion ? mx * 10 : 0;
-      const oy = parallax && !reducedMotion ? my * 6 : 0;
-      ctx.drawImage(img, (cw - dw) / 2 + ox, ch - dh + oy, dw, dh);
+      const ox = parallax && !reducedMotion ? mx * 8 : 0;
+      const oy = parallax && !reducedMotion ? my * 5 : 0;
+      ctx.drawImage(img, (cw - dw) / 2 + ox, (ch - dh) / 2 + oy, dw, dh);
       drawnKey = key;
       needsDraw = false;
     } catch {
