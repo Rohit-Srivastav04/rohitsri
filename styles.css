@@ -49,17 +49,20 @@ img { max-width: 100%; display: block; }
   align-items: center;
   justify-content: flex-end;
   z-index: 40;
+  will-change: transform;
 }
 .cast.on { opacity: 1; }
 
-/* Hero: large character in the right column */
+/* Hero: large character — mouse interactive */
 .cast.mode-hero {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   opacity: 1;
-  transform: none;
+  pointer-events: auto;
+  cursor: default;
+  transition: none;
 }
 .cast.mode-hero #cast-canvas {
   width: auto;
