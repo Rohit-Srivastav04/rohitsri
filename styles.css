@@ -109,16 +109,18 @@ img { max-width: 100%; display: block; }
 #cast-canvas {
   display: block;
   background: transparent !important;
-  filter: drop-shadow(0 22px 36px rgba(0, 0, 0, 0.7));
+  filter: drop-shadow(0 28px 40px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 28px rgba(212, 21, 20, 0.12));
+  image-rendering: auto;
 }
 .cast-ground {
-  width: 48%;
-  height: 12px;
-  margin-top: -8px;
+  width: 52%;
+  height: 14px;
+  margin-top: -10px;
   border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.55), transparent 72%);
-  filter: blur(5px);
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.45), transparent 72%);
+  filter: blur(6px);
   opacity: 0.9;
+  z-index: 1;
 }
 
 .nav {
@@ -174,9 +176,6 @@ img { max-width: 100%; display: block; }
   padding: clamp(24px, 5vh, 56px) clamp(16px, 4vw, 40px) 0;
   max-width: 1240px;
   margin: 0 auto;
-  background:
-    radial-gradient(640px 340px at 88% 18%, rgba(212, 21, 20, 0.14), transparent 62%),
-    radial-gradient(480px 260px at 8% 88%, rgba(205, 203, 202, 0.05), transparent 55%);
 }
 .hero-inner {
   display: flex;
@@ -241,12 +240,35 @@ img { max-width: 100%; display: block; }
   50% { opacity: 1; }
 }
 
+/* Cinematic slate stage — contrast so black outfit reads clearly */
 .hero-stage {
   position: relative;
   min-height: min(78vh, 640px);
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  overflow: hidden;
+  border-radius: 4px 4px 0 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 38%, rgba(212, 21, 20, 0.22), transparent 62%),
+    radial-gradient(ellipse 90% 70% at 50% 100%, rgba(8, 8, 8, 0.55), transparent 55%),
+    linear-gradient(165deg, #3a4554 0%, #232b36 42%, #161b22 78%, #0f1318 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(205, 203, 202, 0.1),
+    inset 0 -80px 60px rgba(8, 8, 8, 0.35);
+}
+.hero-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(8, 8, 8, 0.55), transparent 18%, transparent 82%, rgba(8, 8, 8, 0.35)),
+    linear-gradient(180deg, rgba(205, 203, 202, 0.08), transparent 28%);
+  pointer-events: none;
+  z-index: 1;
+}
+.hero-stage .cast {
+  z-index: 2;
 }
 
 /* JOURNEY */
@@ -261,8 +283,8 @@ img { max-width: 100%; display: block; }
   overflow: hidden;
   border-block: 1px solid var(--line);
   background:
-    radial-gradient(800px 400px at 50% 100%, rgba(212, 21, 20, 0.12), transparent 60%),
-    #080808;
+    radial-gradient(700px 380px at 70% 70%, rgba(212, 21, 20, 0.16), transparent 60%),
+    linear-gradient(180deg, #1c232c 0%, #10141a 55%, #080808 100%);
 }
 .journey-track {
   display: flex;

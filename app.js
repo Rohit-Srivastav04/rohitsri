@@ -57,30 +57,25 @@ const FEATURED = [
   },
 ];
 
-/** Animation clips (journey / one-shots) */
-const CLIPS = {
-  idle: { folder: 'idle', count: 6, fps: 3.2 },
-  blink: { folder: 'blink', count: 4, fps: 10 },
-  walk: { folder: 'walk', count: 6, fps: 10 },
-  think: { folder: 'think', count: 5, fps: 4 },
-  typing: { folder: 'typing', count: 6, fps: 7 },
-  wave: { folder: 'wave', count: 6, fps: 9 },
-  sit: { folder: 'sit', count: 5, fps: 5 },
+/** High-res cinematic PNG sequences (not GIF) */
+const CINE = {
+  idle: { folder: 'cine/idle', count: 4, fps: 2.4 },
+  walk: { folder: 'cine/walk', count: 8, fps: 9 },
+  wave: { folder: 'cine/wave', count: 4, fps: 8 },
 };
 
-/** Mouse-look stills (not a GIF loop) */
 const LOOK = {
-  center: './character/standing/02-hands-in-pockets.png',
-  left: './character/standing/04-looking-left.png',
-  right: './character/standing/05-looking-right.png',
-  up: './character/standing/06-looking-up.png',
-  down: './character/standing/07-looking-down.png',
+  center: './character/cine/look/center.png',
+  left: './character/cine/look/left.png',
+  right: './character/cine/look/right.png',
+  up: './character/cine/look/up.png',
+  down: './character/cine/look/down.png',
 };
 
 const cache = new Map();
 
-function clipUrl(name, i) {
-  const c = CLIPS[name] || CLIPS.idle;
+function frameUrl(clip, i) {
+  const c = CINE[clip] || CINE.idle;
   return `./character/${c.folder}/frame-${String(i + 1).padStart(2, '0')}.png`;
 }
 
@@ -99,8 +94,8 @@ function loadImage(src) {
 
 function preloadAll() {
   Object.values(LOOK).forEach((src) => loadImage(src));
-  Object.keys(CLIPS).forEach((key) => {
-    for (let i = 0; i < CLIPS[key].count; i++) loadImage(clipUrl(key, i));
+  Object.keys(CINE).forEach((key) => {
+    for (let i = 0; i < CINE[key].count; i++) loadImage(frameUrl(key, i));
   });
 }
 
@@ -154,12 +149,10 @@ function setCastMode(cast, mode) {
 }
 
 /**
- * Interactive cast — NOT a GIF:
- * - Mouse X/Y drives look direction (head-turn + look poses)
- * - Soft parallax toward cursor
- * - Wave once on first hover
- * - Idle/blink only when mouse is still
- * - Journey: scroll-scrubbed walk
+ * Cinematic PNG image-sequence cast
+ * - Transparent high-res PNGs on slate stage
+ * - Mouse look swaps look PNGs (no GIF loop)
+ * - Idle / walk / wave are discrete PNG frames
  */
 function setupCinematicCast() {
   const cast = document.getElementById('cast');
@@ -169,6 +162,10 @@ function setupCinematicCast() {
   const progress = document.getElementById('scroll-progress');
   if (!cast || !canvas || !hero || !heroStage) return;
 
+  // higher internal res for crisp PNGs
+  canvas.width = 540;
+  canvas.height = 960;
+
   const ctx = canvas.getContext('2d', { alpha: true });
   let mode = 'mode-hero';
   let inJourney = false;
@@ -176,23 +173,20 @@ function setupCinematicCast() {
   let drawnKey = '';
   let last = performance.now();
 
-  // mouse state (smoothed)
   let mx = 0;
   let my = 0;
   let tx = 0;
   let ty = 0;
   let hasMouse = false;
   let waved = false;
-  let oneShot = null; // { name, frame, acc }
+  let oneShot = null;
   let idleAcc = 0;
   let idleFrame = 0;
-  let blinkCooldown = 2.4 + Math.random() * 2;
   let walkFrame = 0;
-
-  // section clip when following (not hero mouse-look)
   let followClip = 'idle';
   let followFrame = 0;
   let followAcc = 0;
+  let idleTimer = 0;
 
   async function paint(src, opts = {}) {
     const { parallax = true, key = src } = opts;
@@ -202,12 +196,11 @@ function setupCinematicCast() {
       const cw = canvas.width;
       const ch = canvas.height;
       ctx.clearRect(0, 0, cw, ch);
-      // Fit full body; standing sheets are wider — keep feet grounded
-      const scale = Math.min(cw / img.width, ch / img.height) * 0.96;
+      const scale = Math.min(cw / img.width, ch / img.height) * 0.94;
       const dw = img.width * scale;
       const dh = img.height * scale;
-      const ox = parallax ? mx * 8 : 0;
-      const oy = parallax ? my * 5 : 0;
+      const ox = parallax ? mx * 10 : 0;
+      const oy = parallax ? my * 6 : 0;
       ctx.drawImage(img, (cw - dw) / 2 + ox, ch - dh + oy, dw, dh);
       drawnKey = key;
       needsDraw = false;
@@ -217,7 +210,6 @@ function setupCinematicCast() {
   }
 
   function lookSource() {
-    // Full-body look poses only (head-turn sheets are bust crops)
     const ax = Math.abs(mx);
     const ay = Math.abs(my);
     if (ay > ax && my < -0.28) return { src: LOOK.up, key: 'look:up' };
@@ -229,13 +221,12 @@ function setupCinematicCast() {
 
   function onPointer(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
-    if (rect.width < 8 || rect.height < 8) return;
-    const nx = ((clientX - (rect.left + rect.width / 2)) / (rect.width * 0.55));
-    const ny = ((clientY - (rect.top + rect.height * 0.35)) / (rect.height * 0.55));
+    if (rect.width < 8) return;
+    const nx = (clientX - (rect.left + rect.width / 2)) / (rect.width * 0.55);
+    const ny = (clientY - (rect.top + rect.height * 0.35)) / (rect.height * 0.55);
     tx = Math.max(-1, Math.min(1, nx));
     ty = Math.max(-1, Math.min(1, ny));
     hasMouse = true;
-
     if (!waved && mode === 'mode-hero' && !inJourney) {
       waved = true;
       oneShot = { name: 'wave', frame: 0, acc: 0 };
@@ -248,47 +239,10 @@ function setupCinematicCast() {
     (e) => {
       if (window.innerWidth <= 980) return;
       onPointer(e.clientX, e.clientY);
-    },
-    { passive: true }
-  );
-
-  cast.addEventListener(
-    'pointermove',
-    (e) => {
-      onPointer(e.clientX, e.clientY);
-    },
-    { passive: true }
-  );
-
-  // soft reset toward center when idle
-  let idleTimer = 0;
-  window.addEventListener(
-    'pointermove',
-    () => {
       idleTimer = 0;
     },
     { passive: true }
   );
-
-  const scenes = document.querySelectorAll('[data-scene]');
-  const sceneIo = new IntersectionObserver(
-    (entries) => {
-      if (inJourney || mode === 'mode-hero') return;
-      const visible = entries
-        .filter((e) => e.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (!visible) return;
-      const next = visible.target.dataset.scene || 'idle';
-      if (CLIPS[next] && next !== followClip) {
-        followClip = next;
-        followFrame = 0;
-        followAcc = 0;
-        needsDraw = true;
-      }
-    },
-    { threshold: [0.35, 0.55, 0.7] }
-  );
-  scenes.forEach((el) => sceneIo.observe(el));
 
   const journey = document.getElementById('journey');
   const track = document.getElementById('journey-track');
@@ -341,16 +295,8 @@ function setupCinematicCast() {
           const dist = Math.abs(p - center);
           node.style.opacity = String(Math.max(0.12, 1 - dist * chapters.length * 0.85));
         });
-        const idx = Math.min(chapters.length - 1, Math.floor(p * chapters.length));
-        const chapterLocal = p * chapters.length - idx;
-        const ch = chapters[idx];
-        const want = ch?.dataset.scene || 'walk';
-        if (chapterLocal < 0.18 || chapterLocal > 0.82 || want === 'walk') {
-          walkFrame = Math.floor(p * 48) % CLIPS.walk.count;
-          followClip = 'walk';
-        } else if (CLIPS[want]) {
-          followClip = want;
-        }
+        walkFrame = Math.floor(p * 64) % CINE.walk.count;
+        followClip = 'walk';
         needsDraw = true;
         return;
       }
@@ -362,7 +308,10 @@ function setupCinematicCast() {
     }
 
     if (heroStillVisible) placeCastInHero();
-    else placeCastFixed('mode-follow');
+    else {
+      placeCastFixed('mode-follow');
+      followClip = 'idle';
+    }
   }
 
   function onScroll() {
@@ -384,40 +333,34 @@ function setupCinematicCast() {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
 
-    // smooth mouse
-    mx += (tx - mx) * Math.min(1, dt * 8);
-    my += (ty - my) * Math.min(1, dt * 8);
+    mx += (tx - mx) * Math.min(1, dt * 9);
+    my += (ty - my) * Math.min(1, dt * 9);
     idleTimer += dt;
 
-    // parallax CSS (hero only)
     if (mode === 'mode-hero' && !inJourney) {
-      const px = mx * 14;
-      const py = my * 8;
-      cast.style.transform = `translate3d(${px}px, ${py}px, 0)`;
+      cast.style.transform = `translate3d(${mx * 16}px, ${my * 10}px, 0)`;
     }
 
-    // drift back to center if mouse idle
-    if (idleTimer > 2.8) {
-      tx *= 0.96;
-      ty *= 0.96;
+    if (idleTimer > 2.6) {
+      tx *= 0.95;
+      ty *= 0.95;
       if (Math.abs(tx) < 0.02) tx = 0;
       if (Math.abs(ty) < 0.02) ty = 0;
     }
 
-    // JOURNEY / FOLLOW: clip playback
     if (inJourney || mode === 'mode-follow') {
       if (inJourney && followClip === 'walk') {
-        paint(clipUrl('walk', walkFrame), { parallax: false, key: `walk:${walkFrame}` });
+        paint(frameUrl('walk', walkFrame), { parallax: false, key: `walk:${walkFrame}` });
       } else {
-        const clip = CLIPS[followClip] || CLIPS.idle;
+        const clip = CINE[followClip] || CINE.idle;
         followAcc += dt;
-        const step = 1 / (clip.fps || 5);
+        const step = 1 / clip.fps;
         while (followAcc >= step) {
           followAcc -= step;
           followFrame = (followFrame + 1) % clip.count;
           needsDraw = true;
         }
-        paint(clipUrl(followClip, followFrame), {
+        paint(frameUrl(followClip, followFrame), {
           parallax: false,
           key: `${followClip}:${followFrame}`,
         });
@@ -426,11 +369,10 @@ function setupCinematicCast() {
       return;
     }
 
-    // HERO: one-shot wave
     if (oneShot) {
-      const clip = CLIPS[oneShot.name];
+      const clip = CINE[oneShot.name];
       oneShot.acc += dt;
-      const step = 1 / (clip.fps || 8);
+      const step = 1 / clip.fps;
       while (oneShot.acc >= step) {
         oneShot.acc -= step;
         oneShot.frame += 1;
@@ -439,7 +381,7 @@ function setupCinematicCast() {
         oneShot = null;
         needsDraw = true;
       } else {
-        paint(clipUrl(oneShot.name, oneShot.frame), {
+        paint(frameUrl(oneShot.name, oneShot.frame), {
           key: `shot:${oneShot.name}:${oneShot.frame}`,
         });
         requestAnimationFrame(tick);
@@ -447,33 +389,19 @@ function setupCinematicCast() {
       }
     }
 
-    // HERO: mouse look (primary) — not a looping GIF
-    const moving = Math.hypot(tx - mx, ty - my) > 0.002 || Math.hypot(mx, my) > 0.08;
+    const moving = Math.hypot(tx - mx, ty - my) > 0.002 || Math.hypot(mx, my) > 0.1;
     if (hasMouse && moving) {
       const look = lookSource();
       paint(look.src, { key: look.key });
     } else {
-      // quiet idle + rare blink
-      blinkCooldown -= dt;
       idleAcc += dt;
-      const step = 1 / CLIPS.idle.fps;
+      const step = 1 / CINE.idle.fps;
       while (idleAcc >= step) {
         idleAcc -= step;
-        idleFrame = (idleFrame + 1) % CLIPS.idle.count;
+        idleFrame = (idleFrame + 1) % CINE.idle.count;
         needsDraw = true;
       }
-      if (blinkCooldown <= 0) {
-        // play blink as short overlay by swapping 1–2 frames
-        const bi = Math.min(CLIPS.blink.count - 1, Math.floor((-blinkCooldown) * CLIPS.blink.fps));
-        if (bi < CLIPS.blink.count && -blinkCooldown < CLIPS.blink.count / CLIPS.blink.fps) {
-          paint(clipUrl('blink', bi), { key: `blink:${bi}` });
-        } else {
-          blinkCooldown = 2.8 + Math.random() * 3.2;
-          paint(clipUrl('idle', idleFrame), { key: `idle:${idleFrame}` });
-        }
-      } else {
-        paint(clipUrl('idle', idleFrame), { key: `idle:${idleFrame}` });
-      }
+      paint(frameUrl('idle', idleFrame), { key: `idle:${idleFrame}` });
     }
 
     requestAnimationFrame(tick);
