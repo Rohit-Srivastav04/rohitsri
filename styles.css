@@ -203,25 +203,31 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .mobile-nav a:hover { background: rgba(212, 21, 20, 0.1); color: var(--fg); }
 
-/* Hero */
+/* Hero — character dominates (portfolio presented by movement) */
 .hero {
   position: relative;
   z-index: 2;
   min-height: calc(100svh - var(--nav-h));
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: clamp(20px, 4vw, 48px);
-  align-items: center;
-  padding: clamp(28px, 6vh, 64px) clamp(16px, 4vw, 40px) clamp(24px, 4vh, 40px);
-  max-width: 1240px;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(340px, 1.25fr);
+  gap: clamp(12px, 3vw, 36px);
+  align-items: stretch;
+  padding: clamp(16px, 3vh, 36px) clamp(12px, 3vw, 32px) 12px;
+  max-width: 1360px;
   margin: 0 auto;
 }
-.hero-copy { max-width: 34rem; }
+.hero-copy {
+  max-width: 32rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: 12px;
+}
 .hero-name {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(2.6rem, 8vw, 5.4rem);
+  font-size: clamp(2.2rem, 6.5vw, 4.4rem);
   line-height: 0.92;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -311,24 +317,24 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   50% { opacity: 1; transform: translateY(6px); }
 }
 
-/* Character frame + red halo (mockup) */
+/* Character stage — LARGE (movement presents the portfolio) */
 .hero-visual {
   position: relative;
-  min-height: min(72vh, 620px);
+  min-height: calc(100svh - var(--nav-h) - 24px);
   display: grid;
   place-items: end center;
 }
 .halo {
   position: absolute;
-  width: min(78%, 420px);
+  width: min(92%, 620px);
   aspect-ratio: 1;
-  top: 12%;
+  top: 6%;
   left: 50%;
   transform: translateX(-50%);
   border-radius: 50%;
   background:
-    radial-gradient(circle, rgba(212, 21, 20, 0.35) 0%, rgba(212, 21, 20, 0.08) 42%, transparent 68%);
-  box-shadow: 0 0 80px rgba(212, 21, 20, 0.25);
+    radial-gradient(circle, rgba(212, 21, 20, 0.4) 0%, rgba(212, 21, 20, 0.1) 42%, transparent 68%);
+  box-shadow: 0 0 100px rgba(212, 21, 20, 0.3);
   animation: haloPulse 4.5s ease-in-out infinite;
   pointer-events: none;
 }
@@ -339,15 +345,15 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .frame {
   position: relative;
   z-index: 2;
-  width: min(100%, 460px);
-  height: min(70vh, 600px);
-  border-radius: 18px;
-  border: 1px solid rgba(212, 21, 20, 0.35);
+  width: min(100%, 640px);
+  height: min(88vh, 820px);
+  border-radius: 22px;
+  border: 1px solid rgba(212, 21, 20, 0.4);
   background:
-    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(212, 21, 20, 0.12), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(212, 21, 20, 0.14), transparent 60%),
     linear-gradient(180deg, #1a1f28 0%, #0c0e12 100%);
   box-shadow:
-    0 30px 60px rgba(0, 0, 0, 0.45),
+    0 36px 70px rgba(0, 0, 0, 0.5),
     inset 0 0 0 1px rgba(205, 203, 202, 0.06);
   overflow: hidden;
 }
@@ -375,29 +381,29 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .cast.mode-follow {
   position: fixed;
-  right: clamp(8px, 3vw, 28px);
+  right: clamp(8px, 2.5vw, 24px);
   bottom: 0;
-  width: min(150px, 20vw);
-  height: min(300px, 48vh);
+  width: min(240px, 26vw);
+  height: min(480px, 72vh);
 }
 .cast.mode-follow #cast-canvas,
 .cast.mode-journey #cast-canvas {
   width: 100%;
   height: auto;
-  max-height: 94%;
+  max-height: 96%;
 }
 .cast.mode-journey {
   position: fixed;
-  bottom: 4vh;
-  left: 52%;
-  width: min(160px, 18vw);
-  height: min(320px, 50vh);
+  bottom: 3vh;
+  left: 48%;
+  width: min(260px, 28vw);
+  height: min(520px, 74vh);
   transition: left 0.04s linear;
   z-index: 35;
 }
 #cast-canvas {
   background: transparent !important;
-  filter: drop-shadow(0 24px 36px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 28px 40px rgba(0, 0, 0, 0.55));
 }
 
 /* Journey */
@@ -648,11 +654,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   }
   .hero-visual {
     order: -1;
-    min-height: 48vh;
+    min-height: 58vh;
   }
   .frame {
-    width: min(100%, 380px);
-    height: min(52vh, 460px);
+    width: min(100%, 520px);
+    height: min(62vh, 580px);
     margin: 0 auto;
   }
   .cast.mode-follow,
@@ -684,7 +690,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .stack-grid,
   .about-stats { grid-template-columns: 1fr; }
   .hero-name { font-size: clamp(2.2rem, 12vw, 3.2rem); }
-  .frame { height: 44vh; }
+  .frame { height: 56vh; }
   .nav-cta span { display: none; }
 }
 
