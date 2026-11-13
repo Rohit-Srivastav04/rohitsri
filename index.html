@@ -3,28 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Rohit Srivastav — rohitsri · devops</title>
+    <title>Rohit Srivastav — Full-Stack Developer / DevOps</title>
     <meta
       name="description"
-      content="Rohit Srivastav (rohitsri) — full-stack developer & devops. Games, browsers, SaaS."
+      content="Rohit Srivastav — full-stack developer & devops. Cinematic portfolio. Games, browsers, SaaS."
     />
     <meta name="theme-color" content="#080808" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <div class="progress" id="scroll-progress" aria-hidden="true"></div>
     <div class="scanlines" aria-hidden="true"></div>
-    <div class="grain" aria-hidden="true"></div>
+
+    <!-- Sticky cinematic character (scroll-driven) -->
+    <aside class="cast" id="cast" aria-hidden="true">
+      <div class="cast-stage">
+        <img id="cast-img" src="./character/idle/frame-01.png" alt="" />
+        <div class="cast-shadow"></div>
+      </div>
+      <p class="cast-label mono" id="cast-label">ENTERING</p>
+    </aside>
 
     <header class="nav">
-      <button class="nav-burger" id="menu-btn" aria-label="Menu" type="button"><span></span><span></span></button>
       <a class="logo" href="#top">ROHIT<span>SRI</span></a>
-      <nav class="nav-links" id="nav-links">
+      <nav class="nav-links">
+        <a href="#journey">Journey</a>
         <a href="#work">Work</a>
         <a href="#stack">Stack</a>
         <a href="#about">About</a>
@@ -34,108 +43,112 @@
     </header>
 
     <main id="top">
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="hero-kicker mono reveal">FULL-STACK · DEVOPS · PRODUCTS</p>
-          <h1 class="hero-title reveal">
-            <span class="silver">ROHIT</span><br />
+      <!-- HERO -->
+      <section class="scene hero" data-scene="greet" data-label="HELLO">
+        <div class="hero-inner">
+          <p class="mono kicker reveal">FULL-STACK DEVELOPER · DEVOPS</p>
+          <h1 class="hero-name reveal">
+            <span class="silver">ROHIT</span>
             <span class="crimson">SRIVASTAV</span>
           </h1>
-          <p class="hero-brand reveal">rohitsri · <span class="crimson">devops</span></p>
-          <p class="hero-sub reveal">
-            I ship Android games, anti-detect browsers, and SaaS tooling — end to end.
+          <p class="hero-line reveal">
+            I don’t ship résumés. I ship products — games, browsers, and SaaS — with the whole loop owned.
           </p>
           <div class="hero-actions reveal">
-            <a class="btn btn-red" href="#work">Explore Work <span class="arrow">→</span></a>
-            <a class="btn btn-chrome" href="https://github.com/Rohit-Srivastav04" target="_blank" rel="noreferrer">GitHub</a>
+            <a class="btn btn-red" href="#journey">Start the journey →</a>
+            <a class="btn btn-chrome" href="#work">See work</a>
           </div>
+          <p class="scroll-hint mono reveal">SCROLL TO WALK WITH ME</p>
         </div>
-
-        <div class="hero-visual reveal">
-          <div class="char-stage">
-            <img
-              id="hero-char"
-              class="char-2d"
-              src="./character/idle/frame-01.png"
-              alt="Rohit Srivastav 2D character"
-              width="420"
-              height="560"
-            />
-            <div class="char-glow" aria-hidden="true"></div>
-            <div class="photo-badge mono">2D · LIVE IDLE</div>
-          </div>
-          <div class="char-controls mono">
-            <button type="button" data-anim="idle" class="active">IDLE</button>
-            <button type="button" data-anim="wave">WAVE</button>
-          </div>
-          <div class="hud mono" aria-hidden="true">
-            <span>ROHIT SRIVASTAV</span>
-            <span>2D PNG</span>
-            <span>v2026</span>
-          </div>
+        <div class="hero-photo reveal">
+          <img src="./rohit.jpg" alt="Rohit Srivastav" />
         </div>
       </section>
 
-      <section class="ticker" aria-hidden="true">
-        <div class="ticker-track">
-          <span>OBSIDIAN</span><span>#080808</span><span>CHROME SILVER</span><span>#CDCBCA</span>
-          <span>LASER CRIMSON</span><span>#D41514</span><span>ROHIT SRIVASTAV</span><span>DEVOPS</span>
-          <span>OBSIDIAN</span><span>#080808</span><span>CHROME SILVER</span><span>#CDCBCA</span>
-          <span>LASER CRIMSON</span><span>#D41514</span><span>ROHIT SRIVASTAV</span><span>DEVOPS</span>
+      <!-- PINNED JOURNEY: character walks through career chapters -->
+      <section class="journey" id="journey">
+        <div class="journey-pin" id="journey-pin">
+          <div class="journey-track" id="journey-track">
+            <article class="chapter" data-scene="walk" data-label="WALKING IN">
+              <p class="mono kicker">01 — ORIGIN</p>
+              <h2>From code practice to product shipping</h2>
+              <p>Python systems, internships, and the obsession to finish what I start.</p>
+            </article>
+            <article class="chapter" data-scene="think" data-label="THINKING">
+              <p class="mono kicker">02 — SYSTEMS</p>
+              <h2>Browsers, VMs, hard problems</h2>
+              <p>BeastBrowser · AOSP kits · Chromium packaging · real infrastructure taste.</p>
+            </article>
+            <article class="chapter" data-scene="typing" data-label="BUILDING">
+              <p class="mono kicker">03 — BUILD</p>
+              <h2>Apps &amp; games that launch</h2>
+              <p>Android / Capacitor / Play Console — signed AABs, ads, privacy, live pages.</p>
+            </article>
+            <article class="chapter" data-scene="wave" data-label="SHIPPED">
+              <p class="mono kicker">04 — NOW</p>
+              <h2>Available for serious builds</h2>
+              <p>Full-stack + devops for products that need taste and delivery speed.</p>
+            </article>
+          </div>
+          <div class="journey-bar"><span id="journey-fill"></span></div>
         </div>
       </section>
 
-      <section id="work" class="section">
+      <!-- WORK -->
+      <section class="scene section" id="work" data-scene="typing" data-label="WORK">
         <div class="section-head reveal">
-          <p class="mono eyebrow">01 // SELECTED WORK</p>
-          <h2>Shipped <span class="crimson">products</span></h2>
-          <p class="section-sub">Games, browsers, APIs — from GitHub + live launches.</p>
+          <p class="mono kicker">SELECTED WORK</p>
+          <h2>Things I’ve <span class="crimson">shipped</span></h2>
         </div>
         <div class="project-list" id="project-list"></div>
       </section>
 
-      <section id="stack" class="section">
+      <!-- STACK -->
+      <section class="scene section" id="stack" data-scene="idle" data-label="STACK">
         <div class="section-head reveal">
-          <p class="mono eyebrow">02 // STACK</p>
-          <h2>Weapons of <span class="crimson">choice</span></h2>
+          <p class="mono kicker">CAPABILITIES</p>
+          <h2>Stack I actually <span class="crimson">use</span></h2>
         </div>
         <div class="stack-grid">
-          <article class="reveal"><h3>Frontend</h3><p>TypeScript · React/Next · Vite · Canvas</p></article>
-          <article class="reveal"><h3>Mobile</h3><p>Kotlin · Android · Capacitor · Play</p></article>
-          <article class="reveal"><h3>SaaS / API</h3><p>Node · traffic tooling · Vercel</p></article>
-          <article class="reveal"><h3>Systems</h3><p>Chromium · AOSP · crosvm/WHPX</p></article>
+          <article class="reveal"><h3>Frontend</h3><p>TypeScript, React/Next, Vite, Canvas game UI</p></article>
+          <article class="reveal"><h3>Mobile</h3><p>Kotlin, Android, Capacitor, Play shipping</p></article>
+          <article class="reveal"><h3>SaaS</h3><p>APIs, traffic tooling, auth, Vercel</p></article>
+          <article class="reveal"><h3>Systems</h3><p>Chromium, AOSP, crosvm/WHPX, Shell</p></article>
         </div>
       </section>
 
-      <section id="about" class="section about">
-        <div class="about-layout">
-          <div class="about-photo reveal">
-            <img src="./rohit.jpg" alt="Rohit Srivastav" />
-          </div>
+      <!-- ABOUT -->
+      <section class="scene section about" id="about" data-scene="think" data-label="ABOUT">
+        <div class="about-grid">
           <div class="about-copy reveal">
-            <p class="mono eyebrow">03 // ABOUT</p>
-            <h2>Rohit <span class="crimson">Srivastav</span></h2>
+            <p class="mono kicker">ABOUT</p>
+            <h2>Rohit Srivastav</h2>
             <p>
-              Full-stack developer &amp; devops. I own the loop — architecture → UI → native packaging → release.
-              Products like <a href="https://beastbrowser.com" target="_blank" rel="noreferrer">BeastBrowser</a>,
-              mobile games, and Play-ready builds.
+              Full-stack developer &amp; devops. I like owning idea → architecture → UI → release.
+              Recent work spans anti-detect browsers
+              (<a href="https://beastbrowser.com" target="_blank" rel="noreferrer">BeastBrowser</a>),
+              landscape games, and Play-ready Android builds.
             </p>
             <div class="about-stats">
-              <div><strong id="repo-count">—</strong><span>repos</span></div>
-              <div><strong>FS + DevOps</strong><span>focus</span></div>
-              <div><strong>Ship</strong><span>mindset</span></div>
+              <div><strong id="repo-count">—</strong><span>public repos</span></div>
+              <div><strong>End-to-end</strong><span>ownership</span></div>
+              <div><strong>Ship</strong><span>over slides</span></div>
             </div>
+          </div>
+          <div class="about-photo reveal">
+            <img src="./rohit.jpg" alt="Rohit Srivastav portrait" />
           </div>
         </div>
       </section>
 
-      <section id="contact" class="section">
+      <!-- CONTACT -->
+      <section class="scene section contact" id="contact" data-scene="wave" data-label="CONTACT">
         <div class="contact-panel reveal">
-          <p class="mono eyebrow">04 // CONTACT</p>
-          <h2>Ready when <span class="crimson">you</span> are.</h2>
-          <p>Rohit Srivastav — games · SaaS · Android · browsers.</p>
+          <p class="mono kicker">CONTACT</p>
+          <h2>Let’s build the <span class="crimson">next</span> one.</h2>
+          <p>Rohit Srivastav — games · SaaS · Android · browser systems.</p>
           <div class="hero-actions">
-            <a class="btn btn-red" href="https://github.com/Rohit-Srivastav04" target="_blank" rel="noreferrer">Open GitHub →</a>
+            <a class="btn btn-red" href="https://github.com/Rohit-Srivastav04" target="_blank" rel="noreferrer">GitHub →</a>
             <a class="btn btn-chrome" href="https://rohit-srivastav04.github.io/" target="_blank" rel="noreferrer">Play We Can Do Devil</a>
           </div>
         </div>
@@ -143,8 +156,8 @@
     </main>
 
     <footer class="footer">
-      <span>© <span id="year"></span> Rohit Srivastav · rohitsri</span>
-      <span class="mono">BLACK · SILVER · CRIMSON</span>
+      <span>© <span id="year"></span> Rohit Srivastav</span>
+      <span class="mono">SCROLL-DRIVEN · 2D CHARACTER · LIVE</span>
     </footer>
 
     <script src="./app.js" type="module"></script>

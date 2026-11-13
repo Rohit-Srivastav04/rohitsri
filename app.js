@@ -1,44 +1,42 @@
 const FEATURED = [
   {
     name: 'We Can Do Devil',
-    blurb:
-      'Landscape Android platformer — 30 levels, Capacitor + AdMob, signed Play builds.',
-    tags: ['TypeScript', 'Capacitor', 'Android'],
+    blurb: 'Landscape Android platformer — Capacitor, AdMob, Play-ready builds.',
+    tags: ['TypeScript', 'Android', 'Capacitor'],
     href: 'https://rohit-srivastav04.github.io/',
     kind: 'Game',
   },
   {
     name: 'BeastBrowser',
-    blurb:
-      'Anti-detect browser SaaS — isolated profiles, proxies, fingerprints. Live product.',
+    blurb: 'Anti-detect browser SaaS — profiles, proxies, fingerprints.',
     tags: ['SaaS', 'Chromium', 'Product'],
     href: 'https://beastbrowser.com',
     kind: 'SaaS',
   },
   {
     name: 'BeastPhone AOSP Kit',
-    blurb: 'Android 14 guest image kit for BeastBrowser crosvm / WHPX runtime.',
+    blurb: 'Android 14 guest image kit for crosvm / WHPX runtime.',
     tags: ['AOSP', 'Shell', 'Systems'],
     href: 'https://github.com/Rohit-Srivastav04/beastphone-aosp-build-kit',
     kind: 'Systems',
   },
   {
     name: 'Killer Aaloo',
-    blurb: '2D run-and-gun — 30 levels, bosses, landscape mobile controls.',
+    blurb: '2D run-and-gun — 30 levels, bosses, landscape controls.',
     tags: ['TypeScript', 'Game'],
     href: 'https://github.com/Rohit-Srivastav04/killer-aaloo',
     kind: 'Game',
   },
   {
     name: 'VarFox Browser',
-    blurb: 'Windows browser release line — packaging & distribution.',
+    blurb: 'Windows browser release packaging & distribution.',
     tags: ['Windows', 'Browser'],
     href: 'https://github.com/Rohit-Srivastav04/varfox',
     kind: 'Product',
   },
   {
     name: 'Beast Traffic API',
-    blurb: 'API & traffic tooling for the BeastBrowser ecosystem.',
+    blurb: 'API & traffic tooling for BeastBrowser ecosystem.',
     tags: ['API', 'SaaS'],
     href: 'https://github.com/Rohit-Srivastav04/beast-traffic-api',
     kind: 'SaaS',
@@ -57,35 +55,34 @@ const FEATURED = [
     href: 'https://github.com/Rohit-Srivastav04/Arrow-logic',
     kind: 'Game',
   },
-  {
-    name: 'Database Console',
-    blurb: 'Web database tooling on Vercel.',
-    tags: ['JavaScript', 'Vercel'],
-    href: 'https://database-cyan-delta.vercel.app',
-    kind: 'Web',
-  },
-  {
-    name: 'Codveda Internship',
-    blurb: 'Python project set from Codveda Technologies internship.',
-    tags: ['Python'],
-    href: 'https://github.com/Rohit-Srivastav04/Codveda-Internship-Project',
-    kind: 'Backend',
-  },
 ];
 
-const SKIP = new Set([
-  'desktop-tutorial',
-  'Rohit-Srivastav04',
-  'Rohit-srivastav.github.io',
-  'rohit',
-  'RDP',
-  'mainRDP',
-  'nextjs-boilerplate',
-  'beastbrowser-chromium-148-backup',
-  'Codveda-Internship-Projects',
-  'Level2_ToDoList',
-  'rohitsri',
-]);
+const SCENES = {
+  greet: { folder: 'greet', count: 5, fps: 7, loop: true },
+  idle: { folder: 'idle', count: 6, fps: 5, loop: true },
+  walk: { folder: 'walk', count: 6, fps: 10, loop: true },
+  think: { folder: 'think', count: 5, fps: 5, loop: true },
+  typing: { folder: 'typing', count: 6, fps: 8, loop: true },
+  wave: { folder: 'wave', count: 6, fps: 8, loop: true },
+  sit: { folder: 'sit', count: 5, fps: 6, loop: false },
+};
+
+function framesFor(scene) {
+  const s = SCENES[scene] || SCENES.idle;
+  return Array.from({ length: s.count }, (_, i) => {
+    const n = String(i + 1).padStart(2, '0');
+    return `./character/${s.folder}/frame-${n}.png`;
+  });
+}
+
+function preloadAll() {
+  Object.keys(SCENES).forEach((key) => {
+    framesFor(key).forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  });
+}
 
 function projectCard(p, i) {
   const el = document.createElement('a');
@@ -94,15 +91,22 @@ function projectCard(p, i) {
   el.target = '_blank';
   el.rel = 'noreferrer';
   el.innerHTML = `
-    <div class="project-index">${String(i + 1).padStart(2, '0')} · ${p.kind || 'Project'}</div>
+    <div class="project-index">${String(i + 1).padStart(2, '0')} · ${p.kind}</div>
     <div>
       <h3>${p.name}</h3>
       <p>${p.blurb}</p>
-      <div class="tags">${(p.tags || []).map((t) => `<span class="tag">${t}</span>`).join('')}</div>
+      <div class="tags">${p.tags.map((t) => `<span class="tag">${t}</span>`).join('')}</div>
     </div>
     <div class="project-link">OPEN ↗</div>
   `;
   return el;
+}
+
+function renderProjects(list) {
+  const root = document.getElementById('project-list');
+  root.innerHTML = '';
+  list.forEach((p, i) => root.appendChild(projectCard(p, i)));
+  observeReveals();
 }
 
 function observeReveals() {
@@ -115,132 +119,138 @@ function observeReveals() {
         }
       });
     },
-    { threshold: 0.12, rootMargin: '0px 0px -6% 0px' }
+    { threshold: 0.12 }
   );
   document.querySelectorAll('.reveal:not(.in)').forEach((el) => io.observe(el));
 }
 
-function renderProjects(list) {
-  const root = document.getElementById('project-list');
-  root.innerHTML = '';
-  list.forEach((p, i) => root.appendChild(projectCard(p, i)));
-  observeReveals();
-}
+/** Sticky cast + scroll-driven cinematic scenes */
+function setupCinematicCast() {
+  const cast = document.getElementById('cast');
+  const img = document.getElementById('cast-img');
+  const label = document.getElementById('cast-label');
+  const progress = document.getElementById('scroll-progress');
+  if (!cast || !img) return;
 
-async function hydrateFromGitHub() {
-  try {
-    const [userRes, repoRes] = await Promise.all([
-      fetch('https://api.github.com/users/Rohit-Srivastav04'),
-      fetch('https://api.github.com/users/Rohit-Srivastav04/repos?per_page=100&sort=updated'),
-    ]);
-    if (userRes.ok) {
-      const user = await userRes.json();
-      const count = document.getElementById('repo-count');
-      if (count) count.textContent = String(user.public_repos ?? '—');
-    }
-    if (!repoRes.ok) return;
-    const repos = await repoRes.json();
-    const known = new Set(FEATURED.map((f) => f.name.toLowerCase()));
-    const extras = repos
-      .filter((r) => !r.fork && !SKIP.has(r.name))
-      .filter((r) => r.description || r.homepage)
-      .filter((r) => !known.has(r.name.toLowerCase()))
-      .slice(0, 3)
-      .map((r) => ({
-        name: r.name,
-        blurb: r.description || 'Open-source project on GitHub.',
-        tags: [r.language, ...(r.topics || [])].filter(Boolean).slice(0, 3),
-        href: r.homepage || r.html_url,
-        kind: 'GitHub',
-      }));
-    const hrefs = new Set(FEATURED.map((f) => f.href));
-    renderProjects([...FEATURED, ...extras.filter((e) => !hrefs.has(e.href))]);
-  } catch {
-    /* curated list still shows */
-  }
-}
-
-function setupMenu() {
-  const btn = document.getElementById('menu-btn');
-  const links = document.getElementById('nav-links');
-  if (!btn || !links) return;
-  btn.addEventListener('click', () => links.classList.toggle('open'));
-  links.querySelectorAll('a').forEach((a) =>
-    a.addEventListener('click', () => links.classList.remove('open'))
-  );
-}
-
-const ANIMS = {
-  idle: {
-    frames: [
-      './character/idle/frame-01.png',
-      './character/idle/frame-02.png',
-      './character/idle/frame-03.png',
-      './character/idle/frame-04.png',
-      './character/idle/frame-05.png',
-      './character/idle/frame-06.png',
-    ],
-    fps: 6,
-  },
-  wave: {
-    frames: [
-      './character/wave/frame-01.png',
-      './character/wave/frame-02.png',
-      './character/wave/frame-03.png',
-      './character/wave/frame-04.png',
-      './character/wave/frame-05.png',
-      './character/wave/frame-06.png',
-    ],
-    fps: 8,
-  },
-};
-
-function setupCharacterAnim() {
-  const img = document.getElementById('hero-char');
-  if (!img) return;
-  let mode = 'idle';
-  let i = 0;
+  let scene = 'greet';
+  let frame = 0;
   let acc = 0;
   let last = performance.now();
+  let walkScrollDrive = false;
+  let walkProgress = 0;
 
-  // preload
-  Object.values(ANIMS).forEach((a) =>
-    a.frames.forEach((src) => {
-      const x = new Image();
-      x.src = src;
-    })
+  function setScene(next, nextLabel) {
+    if (!SCENES[next]) next = 'idle';
+    if (scene !== next) {
+      scene = next;
+      frame = 0;
+      acc = 0;
+      img.src = framesFor(scene)[0];
+    }
+    if (nextLabel) label.textContent = nextLabel;
+    walkScrollDrive = next === 'walk';
+  }
+
+  // Section observers for scene changes
+  const scenes = document.querySelectorAll('[data-scene]');
+  const sceneIo = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((e) => e.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      // don't override while journey pin owns walk
+      if (document.body.classList.contains('in-journey')) return;
+      const el = visible.target;
+      setScene(el.dataset.scene, el.dataset.label || el.dataset.scene.toUpperCase());
+    },
+    { threshold: [0.35, 0.55, 0.7] }
   );
+  scenes.forEach((el) => sceneIo.observe(el));
+
+  // Journey horizontal pin (desktop)
+  const journey = document.getElementById('journey');
+  const track = document.getElementById('journey-track');
+  const fill = document.getElementById('journey-fill');
+  const chapters = [...document.querySelectorAll('.chapter')];
+
+  function updateJourney() {
+    if (!journey || !track) return;
+    if (window.innerWidth <= 980) {
+      track.style.transform = '';
+      document.body.classList.remove('in-journey');
+      return;
+    }
+    const rect = journey.getBoundingClientRect();
+    const total = journey.offsetHeight - window.innerHeight;
+    const scrolled = Math.min(Math.max(-rect.top, 0), total);
+    const p = total > 0 ? scrolled / total : 0;
+
+    const inView = rect.top <= 0 && rect.bottom >= window.innerHeight;
+    document.body.classList.toggle('in-journey', inView);
+    cast.classList.toggle('on', true);
+
+    if (inView) {
+      track.style.transform = `translate3d(${-p * 75}%, 0, 0)`;
+      if (fill) fill.style.width = `${p * 100}%`;
+      walkProgress = p;
+      const idx = Math.min(chapters.length - 1, Math.floor(p * chapters.length));
+      const ch = chapters[idx];
+      if (ch) setScene(ch.dataset.scene || 'walk', ch.dataset.label || 'JOURNEY');
+    }
+  }
+
+  function onScroll() {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const p = max > 0 ? window.scrollY / max : 0;
+    if (progress) progress.style.width = `${p * 100}%`;
+    cast.classList.toggle('on', window.scrollY > 40);
+    updateJourney();
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
 
   function tick(now) {
     const dt = (now - last) / 1000;
     last = now;
-    const anim = ANIMS[mode];
-    acc += dt;
-    const step = 1 / anim.fps;
-    while (acc >= step) {
-      acc -= step;
-      i = (i + 1) % anim.frames.length;
-      img.src = anim.frames[i];
+    const cfg = SCENES[scene] || SCENES.idle;
+    const list = framesFor(scene);
+
+    if (walkScrollDrive && scene === 'walk') {
+      // scroll position drives walk frame
+      frame = Math.floor(walkProgress * 40) % list.length;
+      img.src = list[frame];
+    } else {
+      acc += dt;
+      const step = 1 / (cfg.fps || 6);
+      while (acc >= step) {
+        acc -= step;
+        frame = (frame + 1) % list.length;
+        img.src = list[frame];
+      }
     }
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
+}
 
-  document.querySelectorAll('.char-controls [data-anim]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      mode = btn.getAttribute('data-anim') || 'idle';
-      i = 0;
-      acc = 0;
-      document.querySelectorAll('.char-controls button').forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-      img.src = ANIMS[mode].frames[0];
-    });
-  });
+async function hydrateFromGitHub() {
+  try {
+    const res = await fetch('https://api.github.com/users/Rohit-Srivastav04');
+    if (!res.ok) return;
+    const user = await res.json();
+    const el = document.getElementById('repo-count');
+    if (el) el.textContent = String(user.public_repos ?? '—');
+  } catch {
+    /* ignore */
+  }
 }
 
 document.getElementById('year').textContent = String(new Date().getFullYear());
-setupMenu();
-setupCharacterAnim();
+preloadAll();
+setupCinematicCast();
 renderProjects(FEATURED);
 observeReveals();
 hydrateFromGitHub();
