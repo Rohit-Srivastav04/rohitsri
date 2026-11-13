@@ -67,20 +67,30 @@ const SCENES = {
   sit: { folder: 'sit', count: 5, fps: 6, loop: false },
 };
 
-function framesFor(scene) {
+const cache = new Map();
+
+function frameUrl(scene, i) {
   const s = SCENES[scene] || SCENES.idle;
-  return Array.from({ length: s.count }, (_, i) => {
-    const n = String(i + 1).padStart(2, '0');
-    return `./character/${s.folder}/frame-${n}.png`;
+  const n = String(i + 1).padStart(2, '0');
+  return `./character/${s.folder}/frame-${n}.png`;
+}
+
+function loadImage(src) {
+  if (cache.has(src)) return cache.get(src);
+  const p = new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
   });
+  cache.set(src, p);
+  return p;
 }
 
 function preloadAll() {
   Object.keys(SCENES).forEach((key) => {
-    framesFor(key).forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
+    const s = SCENES[key];
+    for (let i = 0; i < s.count; i++) loadImage(frameUrl(key, i));
   });
 }
 
@@ -124,34 +134,61 @@ function observeReveals() {
   document.querySelectorAll('.reveal:not(.in)').forEach((el) => io.observe(el));
 }
 
-/** Sticky cast + scroll-driven cinematic scenes */
+/**
+ * Apple-style canvas cast:
+ * - transparent PNG sequence drawn to canvas (no box / no plate)
+ * - scroll progress scrubs walk frames during journey
+ * - character slides across pin stage while chapters scrub
+ */
 function setupCinematicCast() {
   const cast = document.getElementById('cast');
-  const img = document.getElementById('cast-img');
-  const label = document.getElementById('cast-label');
+  const canvas = document.getElementById('cast-canvas');
   const progress = document.getElementById('scroll-progress');
-  if (!cast || !img) return;
+  if (!cast || !canvas) return;
 
+  const ctx = canvas.getContext('2d', { alpha: true });
   let scene = 'greet';
   let frame = 0;
   let acc = 0;
   let last = performance.now();
-  let walkScrollDrive = false;
   let walkProgress = 0;
+  let inJourney = false;
+  let drawn = null;
+  let needsDraw = true;
 
-  function setScene(next, nextLabel) {
+  async function drawFrame(sceneKey, index) {
+    const cfg = SCENES[sceneKey] || SCENES.idle;
+    const i = ((index % cfg.count) + cfg.count) % cfg.count;
+    const key = `${sceneKey}:${i}`;
+    if (drawn === key && !needsDraw) return;
+    try {
+      const img = await loadImage(frameUrl(sceneKey, i));
+      const cw = canvas.width;
+      const ch = canvas.height;
+      ctx.clearRect(0, 0, cw, ch);
+      const scale = Math.min(cw / img.width, ch / img.height);
+      const dw = img.width * scale;
+      const dh = img.height * scale;
+      const dx = (cw - dw) / 2;
+      const dy = ch - dh;
+      ctx.drawImage(img, dx, dy, dw, dh);
+      drawn = key;
+      needsDraw = false;
+    } catch {
+      /* skip missing frame */
+    }
+  }
+
+  function setScene(next) {
     if (!SCENES[next]) next = 'idle';
     if (scene !== next) {
       scene = next;
       frame = 0;
       acc = 0;
-      img.src = framesFor(scene)[0];
+      needsDraw = true;
     }
-    if (nextLabel) label.textContent = nextLabel;
-    walkScrollDrive = next === 'walk';
   }
 
-  // Section observers for scene changes
   const scenes = document.querySelectorAll('[data-scene]');
   const sceneIo = new IntersectionObserver(
     (entries) => {
@@ -159,16 +196,13 @@ function setupCinematicCast() {
         .filter((e) => e.isIntersecting)
         .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
       if (!visible) return;
-      // don't override while journey pin owns walk
       if (document.body.classList.contains('in-journey')) return;
-      const el = visible.target;
-      setScene(el.dataset.scene, el.dataset.label || el.dataset.scene.toUpperCase());
+      setScene(visible.target.dataset.scene);
     },
     { threshold: [0.35, 0.55, 0.7] }
   );
   scenes.forEach((el) => sceneIo.observe(el));
 
-  // Journey horizontal pin (desktop)
   const journey = document.getElementById('journey');
   const track = document.getElementById('journey-track');
   const fill = document.getElementById('journey-fill');
@@ -179,6 +213,8 @@ function setupCinematicCast() {
     if (window.innerWidth <= 980) {
       track.style.transform = '';
       document.body.classList.remove('in-journey');
+      cast.classList.remove('in-journey');
+      inJourney = false;
       return;
     }
     const rect = journey.getBoundingClientRect();
@@ -186,17 +222,33 @@ function setupCinematicCast() {
     const scrolled = Math.min(Math.max(-rect.top, 0), total);
     const p = total > 0 ? scrolled / total : 0;
 
-    const inView = rect.top <= 0 && rect.bottom >= window.innerHeight;
-    document.body.classList.toggle('in-journey', inView);
+    inJourney = rect.top <= 0 && rect.bottom >= window.innerHeight;
+    document.body.classList.toggle('in-journey', inJourney);
+    cast.classList.toggle('in-journey', inJourney);
     cast.classList.toggle('on', true);
 
-    if (inView) {
+    if (inJourney) {
       track.style.transform = `translate3d(${-p * 75}%, 0, 0)`;
       if (fill) fill.style.width = `${p * 100}%`;
       walkProgress = p;
+      // walk character across the viewport as chapters scrub
+      const left = 6 + p * 72;
+      cast.style.left = `${left}%`;
+      cast.style.right = 'auto';
       const idx = Math.min(chapters.length - 1, Math.floor(p * chapters.length));
       const ch = chapters[idx];
-      if (ch) setScene(ch.dataset.scene || 'walk', ch.dataset.label || 'JOURNEY');
+      const next = ch?.dataset.scene || 'walk';
+      // prefer walk while moving between chapter beats
+      const chapterLocal = p * chapters.length - idx;
+      setScene(chapterLocal < 0.15 || chapterLocal > 0.85 ? 'walk' : next);
+      // scrub walk frames from scroll (Apple image-sequence style)
+      if (scene === 'walk') {
+        frame = Math.floor(p * 48) % SCENES.walk.count;
+        needsDraw = true;
+      }
+    } else {
+      cast.style.left = '';
+      cast.style.right = '';
     }
   }
 
@@ -204,33 +256,33 @@ function setupCinematicCast() {
     const max = document.documentElement.scrollHeight - window.innerHeight;
     const p = max > 0 ? window.scrollY / max : 0;
     if (progress) progress.style.width = `${p * 100}%`;
-    cast.classList.toggle('on', window.scrollY > 40);
+    cast.classList.toggle('on', window.scrollY > 20);
     updateJourney();
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
+  window.addEventListener('resize', () => {
+    needsDraw = true;
+    onScroll();
+  });
   onScroll();
 
   function tick(now) {
     const dt = (now - last) / 1000;
     last = now;
     const cfg = SCENES[scene] || SCENES.idle;
-    const list = framesFor(scene);
 
-    if (walkScrollDrive && scene === 'walk') {
-      // scroll position drives walk frame
-      frame = Math.floor(walkProgress * 40) % list.length;
-      img.src = list[frame];
-    } else {
+    if (!(inJourney && scene === 'walk')) {
       acc += dt;
       const step = 1 / (cfg.fps || 6);
       while (acc >= step) {
         acc -= step;
-        frame = (frame + 1) % list.length;
-        img.src = list[frame];
+        frame = (frame + 1) % cfg.count;
+        needsDraw = true;
       }
     }
+
+    drawFrame(scene, frame);
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);

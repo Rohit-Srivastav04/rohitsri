@@ -21,13 +21,10 @@
     <div class="progress" id="scroll-progress" aria-hidden="true"></div>
     <div class="scanlines" aria-hidden="true"></div>
 
-    <!-- Sticky cinematic character (scroll-driven) -->
+    <!-- Floating character — transparent canvas, scroll-scrubbed (no box) -->
     <aside class="cast" id="cast" aria-hidden="true">
-      <div class="cast-stage">
-        <img id="cast-img" src="./character/idle/frame-01.png" alt="" />
-        <div class="cast-shadow"></div>
-      </div>
-      <p class="cast-label mono" id="cast-label">ENTERING</p>
+      <canvas id="cast-canvas" width="360" height="720"></canvas>
+      <div class="cast-ground"></div>
     </aside>
 
     <header class="nav">
